@@ -11,7 +11,7 @@
   exclude-result-prefixes="#all"
   >
   
-  <xsl:import href="lib.xsl"/>
+  <xsl:import href="sample-lib.xsl"/>
   
   <!--<xd:doc scope="stylesheet">
     <xd:desc>
