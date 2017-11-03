@@ -50,7 +50,7 @@
         [common] Should you use xsl:apply-template instead of xsl:for-each 
       </report>
     </rule>
-    <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test">
+    <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test" id="use-resolve-uri-in-loading-function">
       <report test="contains(., 'document(concat(') or contains(., 'doc(concat(')">
         [common] Don't use concat within document() or doc() function, use resolve-uri instead (you may use static-base-uri() or base-uri())
       </report>
