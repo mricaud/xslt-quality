@@ -88,7 +88,7 @@
   
   <pattern id="writing">
     <rule context="xsl:attribute | xsl:namespace | xsl:variable | xsl:param | xsl:with-param">
-      <report id="useSeletWhenPossible"
+      <report id="useSelectWhenPossible"
         test="not(@select) and (count(* | text()[normalize-space(.)]) = 1) and (count(xsl:value-of | xsl:sequence | text()[normalize-space(.)]) = 1)">
         [writing] Use @select to assign a value to <name/>
       </report>
