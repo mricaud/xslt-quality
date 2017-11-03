@@ -3,12 +3,10 @@
 This repo is about testing your XSLT quality.
 It contains a main schematron to be applied to your XSLT :
 
-- `checkXSLTstyle.sch` : it extends `xsl-quality.sch` by adding specific rules
+- `checkXSLTstyle.sch` : it doesn't contains any rules, it's only a wrapper to extends rules of each modules : 
 
-This schematron doesn't contains any rules, it's only a wrapper to extends rules of each modules : 
-
-- `xsl-quality.sch` : an iso-schematron implementation of [Mukul Gandhi XSL QUALITY xslt](http://gandhimukul.tripod.com/xslt/xslquality.html)
-- `xsl-common.sch` : common rules
+    - `xsl-quality.sch` : an iso-schematron implementation of [Mukul Gandhi XSL QUALITY xslt](http://gandhimukul.tripod.com/xslt/xslquality.html)
+    - `xsl-common.sch` : common schematron rules for good XSLT practice
 
 You may use the main schematron wrapper or only the module you wish.
 
