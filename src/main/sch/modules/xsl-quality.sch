@@ -3,7 +3,7 @@
 CHANGELOG : 
   - 2017-11-05 : rule "xslqual-SettingValueOfParamIncorrectly" : extend rule to xsl:sequence
   - 2017-11-05 : rule "xslqual-UnusedFunction" : extends xsl xpath attributes
-  
+  - 2017-11-05 : rule "xslqual-UnusedFunction" : extends to function call in Attribute Value Template
 -->
 <schema 
   xmlns="http://purl.oclc.org/dsdl/schematron" 
@@ -95,7 +95,7 @@ CHANGELOG :
     <rule context="xsl:function[count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
       <report id="xslqual-UnusedFunction"
         test="not(some $x in //(xsl:template/@match | xsl:*/@select | xsl:when/@test) satisfies contains($x, @name)) 
-        ">
+        and not(some $x in //(*[not(self::xsl:*)]/@*) satisfies contains($x, concat('{', @name, '(')))">
         [xslqual] Stylesheet function is unused
       </report>
       <report id="xslqual-FunctionComplexity"
