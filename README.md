@@ -14,20 +14,20 @@ You may use the main schematron wrapper or only the module you wish.
 
 OXygen v19 has a default schematron which is automaticaly applied to any edited XSLT, aiming at checking code quality :
 
-`[INSTALL.DIR]\Oxygen XML Developer 19\frameworks\xslt\sch\xsltCustomRules.sch`
+`[INSTALL.DIR]/Oxygen XML Developer 19/frameworks/xslt/sch/xsltCustomRules.sch`
 
 You can customize this schematron by adding : 
 
 ```xml
-<sch:extends href="[path.local.du.clone]/xslt-quality/src/main/sch/checkXSLTstyle.sch"/>
+<sch:extends href="[path.to.local.clone]/xslt-quality/src/main/sch/checkXSLTstyle.sch"/>
 ```
 
-- one can not use `<sch:include>` as explain here : (https://www.oxygenxml.com/forum/topic6804.html)
-- You also may only load `xsl-quality.sch`
+- one can not use `<sch:include>` as explain [here](https://www.oxygenxml.com/forum/topic6804.html)
+- You also may only load one (or more) modules independantly like `xsl-quality.sch`
 
 In this way, both xsltCustomRules.sch and checkXSLTstyle.sch will be applied to your XSLT.
 
-Later I intend to make ths repo available on Maven Central, you should be able to load `checkXSLTstyle.sch` and `xsl-quality.sch` from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
+Later I intend to make this repo available on Maven Central, you should be able to load `checkXSLTstyle.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
 [cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
 
 ## TODO
