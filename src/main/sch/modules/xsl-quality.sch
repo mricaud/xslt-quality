@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+CHANGELOG : 
+  - 2017-11-05 : rule "xslqual-SettingValueOfParamIncorrectly" : extend rule to xsl:sequence
+  - 2017-11-05 : rule "xslqual-UnusedFunction" : extends xsl xpath attributes
+  
+-->
 <schema 
   xmlns="http://purl.oclc.org/dsdl/schematron" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
@@ -72,7 +78,7 @@
     </rule>
     <rule context="xsl:param">
       <report id="xslqual-SettingValueOfParamIncorrectly"
-        test="(count(*) = 1) and (count(xsl:value-of) = 1)">
+        test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1)">
         [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of
       </report>
       <report id="xslqual-UnusedFunctionTemplateParameter"
@@ -88,7 +94,8 @@
     </rule>
     <rule context="xsl:function[count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
       <report id="xslqual-UnusedFunction"
-        test="not(some $x in //(@match | @select) satisfies contains($x, @name))">
+        test="not(some $x in //(xsl:template/@match | xsl:*/@select | xsl:when/@test) satisfies contains($x, @name)) 
+        ">
         [xslqual] Stylesheet function is unused
       </report>
       <report id="xslqual-FunctionComplexity"
