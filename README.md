@@ -4,18 +4,18 @@ This repo is about testing your XSLT quality.
 It contains a main schematron to be applied to your XSLT:
 
 - `checkXSLTstyle.sch`: it doesn't contain any rules, it's only a wrapper to extend rules of each modules:
-  - `xsl-quality.sch`: an iso-schematron implementation of [Mukul Gandhi XSL QUALITY xslt](http://gandhimukul.tripod.com/xslt/xslquality.html)
+  - `xsl-quality.sch`: an iso-schematron implementation of [Mukul Gandhi XSL QUALITY xslt](http://gandhimukul.tripod.com/xslt/xslquality.html) (special thanks to him for allowing me implement his rules)
   - `xsl-common.sch`: common schematron rules for good XSLT practice
 
 You may use the main schematron wrapper or only the module you wish.
 
-## Using XSLT schematron with oXygen 19+ 
+## Using XSLT schematron with Oxygen 19+ 
 
-Oxygen v19 has a default schematron which is automaticaly applied to any edited XSLT, aiming at checking code quality:
+From version 19, Oxygen has a default schematron which is automaticaly applied to any edited XSLT, aiming at checking code quality:
 
 `[INSTALL.DIR]/Oxygen XML Developer 19/frameworks/xslt/sch/xsltCustomRules.sch`
 
-You can customize this schematron by adding: 
+You can customize this schematron by adding this line: 
 
 ```xml
 <sch:extends href="[path.to.local.clone]/xslt-quality/src/main/sch/checkXSLTstyle.sch"/>
@@ -31,17 +31,17 @@ Later, I intend to make this repo available on Maven Central, then you should be
 
 ## TODO
 
-- Move rule "use-resolve-uri-in-loading-function" elsewhere cause it's too specific?
-- Use [quickFix](http://www.schematron-quickfix.com/quickFix/guide.html) / diagnostic?
-- Check for conventions: 
+1. Move rule "use-resolve-uri-in-loading-function" elsewhere cause it's too specific?
+1. Use [quickFix](http://www.schematron-quickfix.com/quickFix/guide.html) / diagnostic?
+1. Check for conventions: 
     - https://google.github.io/styleguide/xmlstyle.html
     - http://blog.xml.rocks/xslt-naming-conventions
     - http://blog.xml.rocks/structuring-xslt-code
-- xsl-qual : have a look at comments on http://markmail.org/message/y5cunpvfpy54wqe6
-- Named template for generating XML elements VS functions to return atomic values as a good practice
-- Should the template ordering be watched by the schematron (copy template at the end, templates with @mode together)
-- Unused template or functions might not be an error (when the xsl is a library)
-- Check that XSLT default templates are not used like :
+1. xsl-qual : have a look at comments on http://markmail.org/message/y5cunpvfpy54wqe6
+1. Named template for generating XML elements VS functions to return atomic values as a good practice
+1. Should the template ordering be watched by the schematron (copy template at the end, templates with @mode together)
+1. Unused template or functions might not be an error (when the xsl is a library)
+1. Check that XSLT default templates are not used like :
 
     ```xml 
     <xsl:template match="/">
@@ -49,8 +49,15 @@ Later, I intend to make this repo available on Maven Central, then you should be
     </xsl:template>
     ```
 
-- Using `<xsl:value-of>` where `<xsl:sequence>` is enough
-- Writing : 
-    - indent with spaces 
-    - No break line inside templates
-    - Space around operators ( =, +, > etc)
+1. Using `<xsl:value-of>` where `<xsl:sequence>` is enough
+1. Writing :
+
+   That mean parsing the xsl as text here, something like:
+   
+    ```xml 
+    <sch:let name="xslt.txt" select="unparse-text(base-uri(/))"/>
+    ```
+   
+    1. indent with spaces 
+    1. No break line inside templates
+    1. Space around operators ( =, +, > etc)
