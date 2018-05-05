@@ -16,6 +16,8 @@ From version 19, Oxygen has a default schematron which is automaticaly applied t
 
 `[INSTALL.DIR]/Oxygen XML Developer 19/frameworks/xslt/sch/xsltCustomRules.sch`
 
+(or `xsltDocCheck.sch` for Oxygen 19.1+)
+
 You can customize this schematron by adding this line: 
 
 ```xml
