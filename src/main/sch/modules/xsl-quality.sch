@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 CHANGELOG : 
+  - 2018-05-11 :
   - 2018-05-11 : rule "xslqual-RedundantNamespaceDeclarations" : take into account some xsl attributes (@select, @as, @name, @mode)
   - 2018-05-11 : reviewing roles
   - 2017-11-05 : rule "xslqual-SettingValueOfParamIncorrectly" : extend rule to xsl:sequence
@@ -69,8 +70,8 @@ CHANGELOG :
     </rule>
     <rule context="xsl:variable">
       <report id="xslqual-SettingValueOfVariableIncorrectly"
-        test="(count(*) = 1) and (count(xsl:value-of) = 1)">
-        [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of
+        test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1) and (normalize-space(string-join(text(), '')) = '')">
+        [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
       <report id="UnusedVariable" role="warning"
         test="not(some $att in //@* satisfies contains($att, concat('$', @name)))">
@@ -79,8 +80,8 @@ CHANGELOG :
     </rule>
     <rule context="xsl:param">
       <report id="xslqual-SettingValueOfParamIncorrectly" role="warning"
-        test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1)">
-        [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of
+        test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1)  and (normalize-space(string-join(text(), '')) = '')">
+        [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
       <report id="xslqual-UnusedFunctionTemplateParameter" role="warning"
         test="(parent::xsl:function or parent::xsl:template) and not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))">
