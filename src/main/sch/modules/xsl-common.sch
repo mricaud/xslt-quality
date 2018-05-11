@@ -15,6 +15,8 @@
   
   <xsl:key name="getElementById" match="*" use="@id"/>
   
+  <let name="NCNAME.reg" value="'[\i-[:]][\c-[:]]*'"/>
+  
   <!--====================================-->
   <!--            DIAGNOSTICS             -->
   <!--====================================-->
@@ -75,8 +77,8 @@
   
   <pattern id="xslt-quality_namespaces">
     <rule context="xsl:template/@name | xsl:template/@mode | /*/xsl:variable/@name | /*/xsl:param/@name">
-      <assert test="matches(normalize-space(.), '^(\w+:.*?\s?)*$')" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
-        [namespaces] <value-of select="local-name(parent::*)"/> @<name/> should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+      <assert test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
+        [namespaces] <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
       </assert>
     </rule>
     <rule context="@match | @select">
