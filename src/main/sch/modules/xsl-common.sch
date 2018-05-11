@@ -28,67 +28,67 @@
   <!--====================================-->
   
   <!--<phase id="test">
-    <active pattern="common"/>
-    <active pattern="documentation"/>
-    <active pattern="typing"/>
-    <active pattern="namespaces"/>
-    <active pattern="writing"/>
+    <active pattern="xslt-quality_common"/>
+    <active pattern="xslt-quality_documentation"/>
+    <active pattern="xslt-quality_typing"/>
+    <active pattern="xslt-quality_namespaces"/>
+    <active pattern="xslt-quality_writing"/>
 	</phase>-->
 
   <!--====================================-->
   <!--              MAIN                 -->
   <!--====================================-->
   
-  <pattern id="common">
-    <rule context="xsl:for-each" id="xsl_for-each">
+  <pattern id="xslt-quality_common">
+    <rule context="xsl:for-each">
       <report test="ancestor::xsl:template 
         and not(starts-with(@select, '$'))
         and not(starts-with(@select, 'tokenize('))
         and not(starts-with(@select, 'distinct-values('))
         and not(matches(@select, '\d'))" 
-        role="warning">
+        role="warning" id="xslt-quality_avoid-for-each">
         [common] Should you use xsl:apply-template instead of xsl:for-each 
       </report>
     </rule>
-    <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test" id="use-resolve-uri-in-loading-function">
-      <report test="contains(., 'document(concat(') or contains(., 'doc(concat(')">
+    <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test">
+      <report test="contains(., 'document(concat(') or contains(., 'doc(concat(')" id="xslt-quality_use-resolve-uri-instead-of-concat">
         [common] Don't use concat within document() or doc() function, use resolve-uri instead (you may use static-base-uri() or base-uri())
       </report>
     </rule>
   </pattern>
   
-  <pattern id="documentation">
+  <pattern id="xslt-quality_documentation">
     <rule context="/xsl:stylesheet">
-      <assert test="xd:doc[@scope = 'stylesheet']">
+      <assert test="xd:doc[@scope = 'stylesheet']" id="xslt-quality_documentation-stylesheet">
         [documentation] Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet">
       </assert>
     </rule>
   </pattern>
   
-  <pattern id="typing">
+  <pattern id="xslt-quality_typing">
     <rule context="xsl:variable | xsl:param">
-      <assert test="@as" diagnostics="addType">
+      <assert test="@as" diagnostics="addType" id="xslt-quality_typing-with-as-attribute">
         [typing] <name/> is not typed
       </assert>
     </rule>
   </pattern>
   
-  <pattern id="namespaces">
+  <pattern id="xslt-quality_namespaces">
     <rule context="xsl:template/@name | xsl:template/@mode | /*/xsl:variable/@name | /*/xsl:param/@name">
-      <assert test="matches(., '^\w+:.*')" role="warning">
+      <assert test="matches(., '^\w+:.*')" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
         [namespaces] <value-of select="local-name(parent::*)"/> @<name/> should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
       </assert>
     </rule>
     <rule context="@match | @select">
-      <report test="contains(., '*:')">
+      <report test="contains(., '*:')" id="xslt-quality_ns-do-not-use-wildcard-prefix">
         [namespaces] Use a namespace prefix instead of *:
       </report>
     </rule>
   </pattern>
   
-  <pattern id="writing">
+  <pattern id="xslt-quality_writing">
     <rule context="xsl:attribute | xsl:namespace | xsl:variable | xsl:param | xsl:with-param">
-      <report id="useSelectWhenPossible"
+      <report id="xslt-quality_writing-use-select-attribute-when-possible"
         test="not(@select) and (count(* | text()[normalize-space(.)]) = 1) and (count(xsl:value-of | xsl:sequence | text()[normalize-space(.)]) = 1)">
         [writing] Use @select to assign a value to <name/>
       </report>
