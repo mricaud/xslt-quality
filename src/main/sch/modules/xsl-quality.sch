@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 CHANGELOG : 
+  - 2018-05-11 : reviewing roles
   - 2017-11-05 : rule "xslqual-SettingValueOfParamIncorrectly" : extend rule to xsl:sequence
   - 2017-11-05 : rule "xslqual-UnusedFunction" : extends xsl xpath attributes
   - 2017-11-05 : rule "xslqual-UnusedFunction" : extends to function call in Attribute Value Template
@@ -71,46 +72,45 @@ CHANGELOG :
         test="(count(*) = 1) and (count(xsl:value-of) = 1)">
         [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of
       </report>
-      <report id="UnusedVariable"
+      <report id="UnusedVariable" role="warning"
         test="not(some $att in //@* satisfies contains($att, concat('$', @name)))">
         [xslqual] Variable is unused in the stylesheet
       </report>
     </rule>
     <rule context="xsl:param">
-      <report id="xslqual-SettingValueOfParamIncorrectly"
+      <report id="xslqual-SettingValueOfParamIncorrectly" role="warning"
         test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1)">
         [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of
       </report>
-      <report id="xslqual-UnusedFunctionTemplateParameter"
+      <report id="xslqual-UnusedFunctionTemplateParameter" role="warning"
         test="(parent::xsl:function or parent::xsl:template) and not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))">
         [xslqual] Function or template parameter is unused in the function/template body
       </report>
     </rule>
     <rule context="xsl:for-each | xsl:if | xsl:when | xsl:otherwise">
-      <report id="xslqual-EmptyContentInInstructions" 
+      <report id="xslqual-EmptyContentInInstructions" role="warning"
         test="(count(node()) = count(text())) and (normalize-space() = '')">
         [xslqual] Don't use empty content for instructions like 'xsl:for-each' 'xsl:if' 'xsl:when' etc.
       </report>
     </rule>
     <rule context="xsl:function[count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
-      <report id="xslqual-UnusedFunction"
+      <report id="xslqual-UnusedFunction" role="warning"
         test="not(some $x in //(xsl:template/@match | xsl:*/@select | xsl:when/@test) satisfies contains($x, @name)) 
         and not(some $x in //(*[not(self::xsl:*)]/@*) satisfies contains($x, concat('{', @name, '(')))">
         [xslqual] Stylesheet function is unused
       </report>
-      <report id="xslqual-FunctionComplexity"
-        test="count(.//xsl:*) &gt; 50" role="info">
+      <report id="xslqual-FunctionComplexity" role="info"
+        test="count(.//xsl:*) &gt; 50">
         [xslqual] Function's size/complexity is high. There is need for refactoring the code.
       </report>
     </rule>
     <rule context="xsl:template">
-      <report id="xslqual-UnusedNamedTemplate"
+      <report id="xslqual-UnusedNamedTemplate" role="warning"
         test="@name and not(@match) and not(//xsl:call-template/@name = @name)">
         [xslqual] Named template in stylesheet in unused
       </report>
-      <report id="xslqual-TemplateComplexity"
-        test="count(.//xsl:*) &gt; 50"
-        role="info">
+      <report id="xslqual-TemplateComplexity" role="info"
+        test="count(.//xsl:*) &gt; 50">
         [xslqual] Template's size/complexity is high. There is need for refactoring the code.
       </report>
     </rule>
