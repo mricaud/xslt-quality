@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 CHANGELOG : 
+  - 2018-05-11 : rule "xslqual-RedundantNamespaceDeclarations" : take into account some xsl attributes (@select, @as, @name, @mode)
   - 2018-05-11 : reviewing roles
   - 2017-11-05 : rule "xslqual-SettingValueOfParamIncorrectly" : extend rule to xsl:sequence
   - 2017-11-05 : rule "xslqual-UnusedFunction" : extends xsl xpath attributes
@@ -37,10 +38,9 @@ CHANGELOG :
   <pattern id="xslqual">
     <rule context="xsl:stylesheet">
       <assert id="xslqual-RedundantNamespaceDeclarations"
-        test="every $s in in-scope-prefixes(.)[not(. = 'xml' or . = '')] satisfies 
-        exists(//(*[not(xsl:stylesheet)] | @*[not(parent::xsl:*)] | @select[parent::xsl:*] 
-        | @as | @name[parent::xsl:*])[starts-with(name(), concat($s, ':')) 
-        or starts-with(., concat($s, ':'))])" 
+        test="every $s in in-scope-prefixes(.)[not(. = ('xml', ''))] satisfies 
+        exists(//(*[not(self::xsl:stylesheet)] | @*[not(parent::xsl:*)] | xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode)
+        [starts-with(name(), concat($s, ':')) or starts-with(., concat($s, ':'))])" 
         role="warning">
         <!--[xslqual] There are redundant namespace declarations in the xsl:stylesheet element-->
         [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere 
