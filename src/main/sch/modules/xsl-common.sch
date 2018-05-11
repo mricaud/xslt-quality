@@ -75,7 +75,7 @@
   
   <pattern id="xslt-quality_namespaces">
     <rule context="xsl:template/@name | xsl:template/@mode | /*/xsl:variable/@name | /*/xsl:param/@name">
-      <assert test="matches(., '^\w+:.*')" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
+      <assert test="matches(normalize-space(.), '^(\w+:.*?\s?)*$')" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
         [namespaces] <value-of select="local-name(parent::*)"/> @<name/> should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
       </assert>
     </rule>
