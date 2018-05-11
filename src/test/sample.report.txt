@@ -1,77 +1,95 @@
-Description: [Saxon-EE] Warning:  [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere 
-Start location: 199:77
+Description: [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere
+Start location: 13:4
 
-Description: [Saxon-EE] Info: [xslqual] Using name() function when local-name() could be appropriate (and vice-versa) 
-Start location: 402:74
+Description: [xslqual] Using name() function when local-name() could be appropriate (and vice-versa)
+Start location: 34:51
 
-Description: [Saxon-EE]  [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of 
-Start location: 255:74
+Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
+Start location: 30:51
 
-Description: [Saxon-EE]  [xslqual] Variable is unused in the stylesheet 
-Start location: 263:74
+Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
+Start location: 44:29
 
-Description: [Saxon-EE]  [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of 
-Start location: 255:74
+Description: [xslqual] Variable is unused in the stylesheet
+Start location: 44:29
 
-Description: [Saxon-EE]  [xslqual] Variable is unused in the stylesheet 
-Start location: 263:74
+Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
+Start location: 48:44
 
-Description: [Saxon-EE]  [xslqual] Variable is unused in the stylesheet 
-Start location: 263:74
+Description: [xslqual] Variable is unused in the stylesheet
+Start location: 48:44
 
-Description: [Saxon-EE]  [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of 
-Start location: 276:74
+Description: [xslqual] Variable is unused in the stylesheet
+Start location: 52:63
 
-Description: [Saxon-EE]  [xslqual] Named template in stylesheet in unused 
-Start location: 336:74
+Description: [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
+Start location: 54:26
 
-Description: [Saxon-EE] Warning: [xslqual] Avoid using the operator // near the root of a large tree 
-Start location: 384:74
+Description: [xslqual] Named template in stylesheet in unused
+Start location: 62:29
 
-Description: [Saxon-EE]  [xslqual] Stylesheet function is unused 
-Start location: 314:74
+Description: [xslqual] Avoid using the operator // near the root of a large tree
+Start location: 63:37
 
-Description: [Saxon-EE] Warning: [common] Should you use xsl:apply-template instead of xsl:for-each 
-Start location: 465:74
+Description: [xslqual] Stylesheet function is unused
+Start location: 70:55
 
-Description: [Saxon-EE] Warning: [common] Should you use xsl:apply-template instead of xsl:for-each 
-Start location: 465:74
+Description: [common] Should you use xsl:apply-template instead of xsl:for-each
+Start location: 33:30
 
-Description: [Saxon-EE]  [documentation] Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet"&gt; 
-Start location: 511:77
+Description: [common] Should you use xsl:apply-template instead of xsl:for-each
+Start location: 63:37
 
-Description: [Saxon-EE]  [typing] xsl:variable is not typed [#diag]Add @as attribute
-Start location: 544:6
+Description: [documentation] Please add a documentation block for the whole stylesheet : <xd:doc scope="stylesheet">
+Start location: 13:4
 
-Description: [Saxon-EE]  [typing] xsl:param is not typed [#diag]Add @as attribute
-Start location: 544:6
+Description: [typing] xsl:variable is not typed Add @as attribute
+Start location: 44:29
 
-Description: [Saxon-EE] Warning: [namespaces] variable @name should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported) 
-Start location: 580:20
+Description: [typing] xsl:param is not typed Add @as attribute
+Start location: 54:26
 
-Description: [Saxon-EE] Warning: [namespaces] variable @name should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported) 
-Start location: 580:20
+Description: [namespaces] variable @name value "var1" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 44:29
 
-Description: [Saxon-EE] Warning: [namespaces] variable @name should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported) 
-Start location: 580:20
+Description: [namespaces] variable @name value "var2" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 48:44
 
-Description: [Saxon-EE] Warning: [namespaces] param @name should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported) 
-Start location: 580:20
+Description: [namespaces] variable @name value "var3" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 52:63
 
-Description: [Saxon-EE] Warning: [namespaces] template @name should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported) 
-Start location: 580:20
+Description: [namespaces] param @name value "var4" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 54:26
 
-Description: [Saxon-EE]  [namespaces] Use a namespace prefix instead of *: 
-Start location: 596:74
+Description: [namespaces] template @name value "main" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 62:29
 
-Description: [Saxon-EE]  [writing] Use @select to assign a value to xsl:variable 
-Start location: 628:6
+Description: [namespaces] Use a namespace prefix instead of *:
+Start location: 63:37
 
-Description: [Saxon-EE]  [writing] Use @select to assign a value to xsl:variable 
-Start location: 628:6
+Description: [namespaces] template @mode value "test" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 68:62
 
-Description: [Saxon-EE]  [writing] Use @select to assign a value to xsl:variable 
-Start location: 628:6
+Description: [writing] Use @select to assign a value to xsl:variable
+Start location: 30:51
 
-Description: [Saxon-EE]  [writing] Use @select to assign a value to xsl:param 
-Start location: 628:6
+Description: [writing] Use @select to assign a value to xsl:variable
+Start location: 44:29
+
+Description: [writing] Use @select to assign a value to xsl:variable
+Start location: 48:44
+
+Description: [writing] Use @select to assign a value to xsl:param
+Start location: 54:26
+
+Description: There is no documentation for the template with match "/".
+Start location: 58:27
+
+Description: There is no documentation for the template with name "main".
+Start location: 62:29
+
+Description: There is no documentation for the template with match "test" , mode "foo:bar local:test test".
+Start location: 68:62
+
+Description: There is no documentation for the function with name "local:makeLink".
+Start location: 70:55  
