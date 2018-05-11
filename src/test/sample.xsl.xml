@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../main/sch/checkXSLTstyle.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <xsl:stylesheet version="2.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:saxon="http://saxon.sf.net/"
-  xmlns:efl="http://www.lefebvre-sarrut.eu/ns/efl"
+  xmlns:unused="unused"
   xmlns:local="local"
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace=""
@@ -63,6 +64,8 @@
       <xsl:value-of select="toto"/>
     </xsl:for-each>
   </xsl:template>
+  
+  <xsl:template match="test" mode="foo:bar local:test test"/>
   
   <xsl:function name="local:makeLink" as="element()*">
     <xsl:for-each select="1 to 10">
