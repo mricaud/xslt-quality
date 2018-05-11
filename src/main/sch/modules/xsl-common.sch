@@ -66,7 +66,7 @@
   </pattern>
   
   <pattern id="xslt-quality_typing">
-    <rule context="xsl:variable | xsl:param">
+    <rule context="xsl:variable | xsl:param  | xsl:with-param | xsl:function">
       <assert test="@as" diagnostics="addType" id="xslt-quality_typing-with-as-attribute">
         [typing] <name/> is not typed
       </assert>
