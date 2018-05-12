@@ -1,0 +1,20 @@
+Description: [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere
+Start location: 14:4
+
+Description: [xslqual] Variable local:var2 is unused in the stylesheet
+Start location: 25:67
+
+Description: [xslqual] Variable local:var3 is unused in the stylesheet
+Start location: 26:67
+
+Description: [xslqual] Variable local:var4 is unused in the stylesheet
+Start location: 27:67
+
+Description: [xslqual] Variable local:var5 is unused in the stylesheet
+Start location: 28:88
+
+Description: [xslqual] Variable local:var6 is unused in the stylesheet
+Start location: 29:67
+
+Description: [xslqual] Variable foo is unused in the stylesheet
+Start location: 35:61

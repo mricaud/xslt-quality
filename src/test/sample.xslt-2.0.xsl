@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--This PI will work in Oxygen if you change the file extension to ".xml"-->
 <?xml-model href="../main/sch/checkXSLTstyle.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <xsl:stylesheet version="2.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -27,6 +28,7 @@
   </xd:doc>
   
   <xsl:template match="/*">
+    <xsl:variable name="foo" select="'bar'" as="xs:string"/>
     <xsl:variable name="children" as="element()*">
       <xsl:sequence select="*"/>
     </xsl:variable>
@@ -56,7 +58,10 @@
   </xsl:param>
   
   <xsl:template match="/">
-    <xsl:apply-templates/>
+    <xsl:variable name="foo" select="'bar'" as="xs:string"/>
+    <xsl:apply-templates>
+      <xsl:with-param name="foo" select="$foo" as="xs:string"/>
+    </xsl:apply-templates>
   </xsl:template>
   
   <xsl:template name="main">
@@ -65,7 +70,7 @@
     </xsl:for-each>
   </xsl:template>
   
-  <xsl:template match="test" mode="foo:bar local:test test"/>
+  <xsl:template match="test" mode="local:test test"/>
   
   <xsl:function name="local:makeLink" as="element()*">
     <xsl:for-each select="1 to 10">

@@ -22,7 +22,7 @@ CHANGELOG :
   <ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
   <ns prefix="saxon" uri="http://saxon.sf.net/"/>
-
+  
   <!--
       This rules are an schematron implementation of Mukul Gandhi XSL QUALITY xslt 
       at http://gandhimukul.tripod.com/xslt/xslquality.html
@@ -74,10 +74,13 @@ CHANGELOG :
         test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1) and (normalize-space(string-join(text(), '')) = '')">
         [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
-      <report id="UnusedVariable" role="warning"
-        test="not(some $att in //@* satisfies contains($att, concat('$', @name)))">
-        [xslqual] Variable is unused in the stylesheet
-      </report>
+      <let name="var.name" value="@name"/>
+      <assert id="xslqual-UnusedVariable" role="warning"
+        test="(some $att  in ancestor::xsl:*[1]//@* satisfies contains($att, concat('$', $var.name))) 
+        or (some $text in ancestor::xsl:*[1]//text()[not(ancestor::xsl:*[1] is /*)][normalize-space(.)][ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
+                satisfies matches($text, concat('\{.*?', concat('\$', $var.name), '.*\}')))">
+        [xslqual] Variable <value-of select="@name"/> is unused in the stylesheet
+      </assert>
     </rule>
     <rule context="xsl:param">
       <report id="xslqual-SettingValueOfParamIncorrectly" role="warning"
