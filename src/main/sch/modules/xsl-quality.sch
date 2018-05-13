@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 CHANGELOG : 
+  - 2018-05-13 : Take into account Text Value Template with XSLT 3.0 and namespaced variables and its scope
   - 2018-05-11 : #xslqual-SettingValueOfVariableIncorrectly, #xslqual-SettingValueOfParamIncorrectly : take xsl:sequence into account in addition to xsl:value-of
      + check if there is no non-empty text-node under the variable/param, which would be an reason to not use @select
   - 2018-05-11 : rule "xslqual-RedundantNamespaceDeclarations" : take into account some xsl attributes (@select, @as, @name, @mode)
@@ -13,20 +14,23 @@ CHANGELOG :
   xmlns="http://purl.oclc.org/dsdl/schematron" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:saxon="http://saxon.sf.net/"
-  queryBinding="xslt2" 
+  queryBinding="xslt3" 
   id="xsl-qual"
   >
   
   <ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
+  <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
+  <ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
   <ns prefix="saxon" uri="http://saxon.sf.net/"/>
   
   <!--
       This rules are an schematron implementation of Mukul Gandhi XSL QUALITY xslt 
       at http://gandhimukul.tripod.com/xslt/xslquality.html
-      Some rules has not bee reproduced :
+      Some rules have not bee reproduced :
           - xslqual-NullOutputFromStylesheet
           - xslqual-DontUseNodeSetExtension
           - xslqual-ShortNames
@@ -58,9 +62,9 @@ CHANGELOG :
         [xslqual] Using a single template/function in the stylesheet. You can modularize the code.
       </report>
       <report id="xslqual-NotUsingSchemaTypes" 
-        test="(@version = '2.0') and not(some $x in .//@* satisfies contains($x, 'xs:'))"
+        test="(@version = ('2.0', '3.0')) and not(some $x in .//@* satisfies contains($x, 'xs:'))"
         role="info">
-        [xslqual] The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT 2.0 mode
+        [xslqual] The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT <value-of select="@version"/> mode
       </report>
     </rule>
     <rule context="xsl:output">
@@ -75,11 +79,20 @@ CHANGELOG :
         [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
       <let name="var.name" value="@name"/>
+      <!--<let name="var.local-name" value="local-name-from-QName(xs:QName(@name))"/>-->
+      <let name="var.local-name" value="if (contains(@name, ':')) then (substring-after(@name, ':')) else (@name)"/>
+      <!--<let name="var.prefix" value="xs:string(prefix-from-QName(xs:QName(@name)))"/>-->
+      <let name="var.prefix" value="substring-before(@name, ':')"/>
+      <!--<let name="var.ns" value="namespace-uri-for-prefix($var.prefix, .)"/>-->
+      <let name="var.ns" value="if (contains(@name, ':')) then (namespace-uri-for-prefix($var.prefix, .)) else ('')"/>
       <assert id="xslqual-UnusedVariable" role="warning"
-        test="(some $att  in ancestor::xsl:*[1]//@* satisfies contains($att, concat('$', $var.name))) 
-        or (some $text in ancestor::xsl:*[1]//text()[not(ancestor::xsl:*[1] is /*)][normalize-space(.)][ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
-                satisfies matches($text, concat('\{.*?', concat('\$', $var.name), '.*\}')))">
-        [xslqual] Variable <value-of select="@name"/> is unused in the stylesheet
+        test="(some $att  in ancestor::xsl:*[1]//@* 
+               satisfies exists(analyze-string($att, concat('\$(.*?):?', $var.local-name))//fn:match[fn:group='' or namespace-uri-for-prefix(fn:group[1], $att/parent::*) = $var.ns])
+               )
+           or (some $text in ancestor::xsl:*[1]//text()[not(ancestor::xsl:*[1] is /*)][normalize-space(.)][ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
+               satisfies exists(analyze-string($text, concat('\{.*?\$(.*?):?', $var.local-name, '.*\}'))//fn:match[fn:group='' or namespace-uri-for-prefix(fn:group[1], $text/parent::*) = $var.ns])
+               )">
+        [xslqual] Variable <value-of select="@name"/> is unused in its scope
       </assert>
     </rule>
     <rule context="xsl:param">

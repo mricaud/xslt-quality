@@ -5,7 +5,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:saxon="http://saxon.sf.net/"
-  queryBinding="xslt2" 
+  queryBinding="xslt3" 
   id="xsl-common.sch"
   >
   
@@ -16,6 +16,7 @@
   <xsl:key name="getElementById" match="*" use="@id"/>
   
   <let name="NCNAME.reg" value="'[\i-[:]][\c-[:]]*'"/>
+  <let name="xslt.version" value="/*/@version"/>
   
   <!--====================================-->
   <!--            DIAGNOSTICS             -->
@@ -93,6 +94,15 @@
       <report id="xslt-quality_writing-use-select-attribute-when-possible"
         test="not(@select) and (count(* | text()[normalize-space(.)]) = 1) and (count(xsl:value-of | xsl:sequence | text()[normalize-space(.)]) = 1)">
         [writing] Use @select to assign a value to <name/>
+      </report>
+    </rule>
+  </pattern>
+  
+  <pattern id="xslt-quality_xslt-3.0">
+    <rule context="xsl:import[$xslt.version = '3.0']">
+      <report id="xslt-quality_xslt-3.0-import-first" 
+        test="following-sibling::xd:doc" role="info">
+        [XSLT-3.0] When using XSLT 3.0 xsl:import may come after the xd:doc block
       </report>
     </rule>
   </pattern>

@@ -1,95 +1,95 @@
 Description: [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere
 Start location: 13:4
 
-Description: [xslqual] Using name() function when local-name() could be appropriate (and vice-versa)
-Start location: 34:51
+Description: [xslqual] Variable foo is unused in its scope
+Start location: 30:61
 
 Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 30:51
+Start location: 31:51
 
 Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 44:29
+Start location: 45:29
 
-Description: [xslqual] Variable is unused in the stylesheet
-Start location: 44:29
+Description: [xslqual] Variable var1 is unused in its scope
+Start location: 45:29
 
 Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 48:44
+Start location: 49:44
 
-Description: [xslqual] Variable is unused in the stylesheet
-Start location: 48:44
+Description: [xslqual] Variable var2 is unused in its scope
+Start location: 49:44
 
-Description: [xslqual] Variable is unused in the stylesheet
-Start location: 52:63
+Description: [xslqual] Variable var3 is unused in its scope
+Start location: 53:63
 
 Description: [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 54:26
+Start location: 57:28
 
 Description: [xslqual] Named template in stylesheet in unused
-Start location: 62:29
+Start location: 69:29
 
 Description: [xslqual] Avoid using the operator // near the root of a large tree
-Start location: 63:37
+Start location: 70:37
 
 Description: [xslqual] Stylesheet function is unused
-Start location: 70:55
+Start location: 77:55
 
 Description: [common] Should you use xsl:apply-template instead of xsl:for-each
-Start location: 33:30
+Start location: 34:30
 
 Description: [common] Should you use xsl:apply-template instead of xsl:for-each
-Start location: 63:37
+Start location: 70:37
 
 Description: [documentation] Please add a documentation block for the whole stylesheet : <xd:doc scope="stylesheet">
 Start location: 13:4
 
 Description: [typing] xsl:variable is not typed Add @as attribute
-Start location: 44:29
+Start location: 45:29
 
 Description: [typing] xsl:param is not typed Add @as attribute
-Start location: 54:26
+Start location: 57:28
 
 Description: [namespaces] variable @name value "var1" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 44:29
+Start location: 45:29
 
 Description: [namespaces] variable @name value "var2" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 48:44
+Start location: 49:44
 
 Description: [namespaces] variable @name value "var3" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 52:63
+Start location: 53:63
 
-Description: [namespaces] param @name value "var4" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 54:26
+Description: [namespaces] param @name value "param4" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 57:28
 
 Description: [namespaces] template @name value "main" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 62:29
+Start location: 69:29
 
 Description: [namespaces] Use a namespace prefix instead of *:
-Start location: 63:37
+Start location: 70:37
 
 Description: [namespaces] template @mode value "test" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 68:62
+Start location: 75:54
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 30:51
+Start location: 31:51
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 44:29
+Start location: 45:29
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 48:44
+Start location: 49:44
 
 Description: [writing] Use @select to assign a value to xsl:param
-Start location: 54:26
+Start location: 57:28
 
 Description: There is no documentation for the template with match "/".
-Start location: 58:27
+Start location: 61:27
 
 Description: There is no documentation for the template with name "main".
-Start location: 62:29
+Start location: 69:29
 
-Description: There is no documentation for the template with match "test" , mode "foo:bar local:test test".
-Start location: 68:62
+Description: There is no documentation for the template with match "test" , mode "local:test test".
+Start location: 75:54
 
 Description: There is no documentation for the function with name "local:makeLink".
-Start location: 70:55  
+Start location: 77:55

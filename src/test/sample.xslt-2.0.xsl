@@ -5,7 +5,6 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:saxon="http://saxon.sf.net/"
   xmlns:unused="unused"
   xmlns:local="local"
   xmlns="http://www.w3.org/1999/xhtml"
@@ -52,13 +51,16 @@
   </xsl:variable>
   
   <xsl:variable name="var3" select="'string'" as="xs:string"/>
-    
-  <xsl:param name="var4">
+  
+  <xsl:variable name="local:var4" select="'string'" as="xs:string"/>
+  
+  <xsl:param name="param4">
     <xsl:sequence select="/toto"/>
   </xsl:param>
   
   <xsl:template match="/">
     <xsl:variable name="foo" select="'bar'" as="xs:string"/>
+    <xsl:sequence select="$local2:var4" xmlns:local2="local"/>
     <xsl:apply-templates>
       <xsl:with-param name="foo" select="$foo" as="xs:string"/>
     </xsl:apply-templates>
