@@ -16,7 +16,7 @@ CHANGELOG :
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:saxon="http://saxon.sf.net/"
+  xmlns:xslq="https://github.com/mricaud/xsl-quality"
   queryBinding="xslt3" 
   id="xsl-qual"
   >
@@ -25,7 +25,9 @@ CHANGELOG :
   <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
   <ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
-  <ns prefix="saxon" uri="http://saxon.sf.net/"/>
+  <ns prefix="xslq" uri="https://github.com/mricaud/xsl-quality"/>
+  
+  <!--<xsl:import href="xslt-quality.xsl"/>-->
   
   <!--
       This rules are an schematron implementation of Mukul Gandhi XSL QUALITY xslt 
@@ -78,21 +80,9 @@ CHANGELOG :
         test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1) and (normalize-space(string-join(text(), '')) = '')">
         [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
-      <let name="var.name" value="@name"/>
-      <!--<let name="var.local-name" value="local-name-from-QName(xs:QName(@name))"/>-->
-      <let name="var.local-name" value="if (contains(@name, ':')) then (substring-after(@name, ':')) else (@name)"/>
-      <!--<let name="var.prefix" value="xs:string(prefix-from-QName(xs:QName(@name)))"/>-->
-      <let name="var.prefix" value="substring-before(@name, ':')"/>
-      <!--<let name="var.ns" value="namespace-uri-for-prefix($var.prefix, .)"/>-->
-      <let name="var.ns" value="if (contains(@name, ':')) then (namespace-uri-for-prefix($var.prefix, .)) else ('')"/>
-      <assert id="xslqual-UnusedVariable" role="warning"
-        test="(some $att  in ancestor::xsl:*[1]//@* 
-               satisfies exists(analyze-string($att, concat('\$(.*?):?', $var.local-name))//fn:match[fn:group='' or namespace-uri-for-prefix(fn:group[1], $att/parent::*) = $var.ns])
-               )
-           or (some $text in ancestor::xsl:*[1]//text()[not(ancestor::xsl:*[1] is /*)][normalize-space(.)][ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
-               satisfies exists(analyze-string($text, concat('\{.*?\$(.*?):?', $var.local-name, '.*\}'))//fn:match[fn:group='' or namespace-uri-for-prefix(fn:group[1], $text/parent::*) = $var.ns])
-               )">
-        [xslqual] Variable <value-of select="@name"/> is unused in its scope
+      <assert id="xslqual-UnusedVariable" role="warning" 
+        test="xslq:var-or-param-is-referenced-within-its-scope(.)">
+        [xslqual] Variable $<value-of select="@name"/> is unused within its scope
       </assert>
     </rule>
     <rule context="xsl:param">
@@ -100,10 +90,10 @@ CHANGELOG :
         test="(count(*) = 1) and (count(xsl:value-of | xsl:sequence) = 1)  and (normalize-space(string-join(text(), '')) = '')">
         [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
       </report>
-      <report id="xslqual-UnusedFunctionTemplateParameter" role="warning"
-        test="(parent::xsl:function or parent::xsl:template) and not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))">
-        [xslqual] Function or template parameter is unused in the function/template body
-      </report>
+      <assert id="xslqual-UnusedParameter" role="warning"
+        test="xslq:var-or-param-is-referenced-within-its-scope(.)">
+        [xslqual] Parameter $<value-of select="@name"/> is unused within its scope
+      </assert>
     </rule>
     <rule context="xsl:for-each | xsl:if | xsl:when | xsl:otherwise">
       <report id="xslqual-EmptyContentInInstructions" role="warning"
@@ -111,12 +101,17 @@ CHANGELOG :
         [xslqual] Don't use empty content for instructions like 'xsl:for-each' 'xsl:if' 'xsl:when' etc.
       </report>
     </rule>
-    <rule context="xsl:function[count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
-      <report id="xslqual-UnusedFunction" role="warning"
+    <rule context="xsl:function[(:ignore function library stylesheet:)
+      count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
+      <assert id="xslqual-UnusedFunction" role="warning"
+        test="xslq:function-is-called-within-its-scope(.)">
+        [xslqual] Function <value-of select="@name"/> is unused in the stylesheet
+      </assert>
+      <!--<report id="xslqual-UnusedFunction" role="warning"
         test="not(some $x in //(xsl:template/@match | xsl:*/@select | xsl:when/@test) satisfies contains($x, @name)) 
         and not(some $x in //(*[not(self::xsl:*)]/@*) satisfies contains($x, concat('{', @name, '(')))">
-        [xslqual] Stylesheet function is unused
-      </report>
+        [xslqual] Function is unused in the stylesheet
+      </report>-->
       <report id="xslqual-FunctionComplexity" role="info"
         test="count(.//xsl:*) &gt; 50">
         [xslqual] Function's size/complexity is high. There is need for refactoring the code.
@@ -125,7 +120,7 @@ CHANGELOG :
     <rule context="xsl:template">
       <report id="xslqual-UnusedNamedTemplate" role="warning"
         test="@name and not(@match) and not(//xsl:call-template/@name = @name)">
-        [xslqual] Named template in stylesheet in unused
+        [xslqual] Named template in unused the stylesheet
       </report>
       <report id="xslqual-TemplateComplexity" role="info"
         test="count(.//xsl:*) &gt; 50">
@@ -181,5 +176,129 @@ CHANGELOG :
       </report>
     </rule>
   </pattern>
+  
+  <!--====================================================-->
+  <!--FUNCTIONS-->
+  <!--====================================================-->
+  
+  <xsl:function name="xslq:var-or-param-is-referenced-within-its-scope" as="xs:boolean">
+    <xsl:param name="var" as="element()"/>
+    <xsl:sequence select="xslq:expand-prefix($var/@name, $var) = 
+      xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix($var/ancestor::xsl:*[1])"/>
+  </xsl:function>
+  
+  <xsl:function name="xslq:function-is-called-within-its-scope" as="xs:boolean">
+    <xsl:param name="function" as="element()"/>
+    <xsl:sequence select="xslq:expand-prefix($function/@name, $function) = 
+      xslq:get-xslt-xpath-function-call-with-expanded-prefix($function/ancestor::xsl:*[last()])"/>
+  </xsl:function>
+  
+  <!--xsl attributes with xpath inside-->
+  <xsl:function name="xslq:get-xslt-xpath-evaluated-attributes" as="attribute()*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:sequence select="$scope//
+      (
+      xsl:accumulator/@initial-value | xsl:accumulator-rule/@select | xsl:accumulator-rule/@match |
+      xsl:analyze-string/@select | xsl:apply-templates/@select | xsl:assert/@test | xsl:assert/@select |
+      xsl:attribute/@select | xsl:break/@select | xsl:catch/@select | xsl:comment/@select |
+      xsl:copy/@select | xsl:copy-of/@select | xsl:evaluate/@xpath | xsl:evaluate/@context-item |
+      xsl:evaluate/@namespace-context | xsl:evaluate/@with-params | xsl:for-each/@select | 
+      xsl:for-each-group/@select | xsl:for-each-group/@group-by | xsl:for-each-group/@group-adjacent | 
+      xsl:for-each-group/@group-starting-with | xsl:for-each-group/@group-ending-with | 
+      xsl:if/@test | xsl:iterate/@select | xsl:key/@match | xsl:key/@use | xsl:map-entry/@key |
+      xsl:merge-key/@select | xsl:merge-source/@for-each-item | xsl:merge-source/@for-each-source | 
+      xsl:merge-source/@select | xsl:message/@select | xsl:namespace/@select |
+      xsl:number/@value | xsl:number/@select | xsl:number/@count | xsl:number/@from | 
+      xsl:on-completion/@select | xsl:on-empty/@select | xsl:on-non-empty/@select |
+      xsl:param/@select | xsl:perform-sort/@select | xsl:processing-instruction/@select | 
+      xsl:sequence/@select | xsl:sort/@select | xsl:template/@match | xsl:try/@select | 
+      xsl:value-of/@select | xsl:variable/@select | xsl:when/@test | xsl:with-param/@select
+      )
+      "/>
+  </xsl:function>
+  
+  <xsl:function name="xslq:get-xslt-xpath-value-template-nodes" as="node()*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:sequence select="
+      (: === Attribute Value Template === :)
+      $scope//@*[matches(., '\{.*?\}')]
+      (: === Text Value Template === :)
+      (: XSLT 3.0 only when expand-text is activated:)
+      |$scope//text()[matches(., '\{.*?\}')]
+      [not(ancestor::xsl:*[1] is /*)](:text outside templates or function is not to be considered, e.g. text within 'xd:doc':)
+      [normalize-space(.)]
+      [ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
+      "/>
+  </xsl:function>
+  
+  <xsl:function name="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix" as="xs:string*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+    <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
+      <xsl:variable name="context" select="parent::*" as="element()"/>
+      <xsl:analyze-string select="." regex="{concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')}">
+        <xsl:matching-substring>
+          <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
+        </xsl:matching-substring>
+      </xsl:analyze-string>
+    </xsl:for-each>
+    <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
+      <xsl:variable name="context" select="parent::*" as="element()"/>
+      <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
+        <xsl:analyze-string select="." regex="{concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')}">
+          <xsl:matching-substring>
+            <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
+          </xsl:matching-substring>
+        </xsl:analyze-string>
+      </xsl:for-each>
+    </xsl:for-each>
+  </xsl:function>
+  
+  <xsl:function name="xslq:get-xslt-xpath-function-call-with-expanded-prefix" as="xs:string*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+    <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
+      <xsl:variable name="context" select="parent::*" as="element()"/>
+      <!--<xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')', '\(.*?\)')}"> carefull with nested functions call-->
+      <xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')\(')}">
+        <xsl:matching-substring>
+          <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
+        </xsl:matching-substring>
+      </xsl:analyze-string>
+    </xsl:for-each>
+    <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
+      <xsl:variable name="context" select="parent::*" as="element()"/>
+      <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
+        <xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')', '\(.*?\)')}">
+          <xsl:matching-substring>
+            <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
+          </xsl:matching-substring>
+        </xsl:analyze-string>
+      </xsl:for-each>
+    </xsl:for-each>
+  </xsl:function>
+  
+  <xsl:function name="xslq:extract-xpath-from-value-template" as="xs:string*">
+    <xsl:param name="string" as="xs:string"/>
+    <xsl:analyze-string select="$string" regex="\{{.*?\}}">
+      <xsl:matching-substring>
+        <xsl:value-of select="."/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+  </xsl:function>
+  
+  <!--Expand any xxx:yyy $string to the bracedURILiteral form Q{ns}yyy using $context to resolve prefix-->
+  <xsl:function name="xslq:expand-prefix" as="xs:string">
+    <xsl:param name="QNameString" as="xs:string"/>
+    <xsl:param name="context" as="element()"/>
+    <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+    <xsl:assert test="matches($QNameString, concat('^', $NCNAME.reg, ':?', $NCNAME.reg))"/>
+    <!--<xsl:variable name="prefix" select="xs:string(prefix-from-QName(xs:QName(@name)))" as="xs:string"/>-->
+    <xsl:variable name="prefix" select="substring-before($QNameString, ':')" as="xs:string"/>
+    <!--<xsl:variable name="local-name" select="local-name-from-QName(xs:QName(@name))" as="xs:string"/>-->
+    <xsl:variable name="local-name" select="if (contains($QNameString, ':')) then (substring-after($QNameString, ':')) else ($QNameString)" as="xs:string"/>
+    <xsl:variable name="ns" select="if ($prefix != '') then (namespace-uri-for-prefix($prefix, $context)) else ('')" as="xs:string"/>
+    <xsl:sequence select="concat('Q{', $ns, '}', $local-name)"/>
+  </xsl:function>
   
 </schema>
