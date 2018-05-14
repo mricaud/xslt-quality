@@ -161,8 +161,8 @@ CHANGELOG :
         [xslqual] Incorrectly using the boolean constants as 'true' or 'false'
       </report>
       <report id="xslqual-UsingNamespaceAxis" 
-        test="/xsl:stylesheet/@version = '2.0' and local-name(.)= ('match', 'select') and contains(., 'namespace::')">
-        [xslqual] Using the deprecated namespace axis, when working in XSLT 2.0 mode
+        test="/xsl:stylesheet/@version = ('2.0', '3.0') and local-name(.)= ('match', 'select') and contains(., 'namespace::')">
+        [xslqual] Using the deprecated namespace axis, when working in XSLT <value-of select="/*/@version"/> mode
       </report>
       <report id="xslqual-CanUseAbbreviatedAxisSpecifier" 
         test="local-name(.) = ('match', 'select') and contains(., 'child::') or contains(., 'attribute::') or contains(., 'parent::node()')"
