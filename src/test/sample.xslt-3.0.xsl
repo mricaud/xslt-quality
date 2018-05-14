@@ -6,6 +6,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xmlns:local="local"
   xmlns:local2="local2"
   xmlns="local"
@@ -22,6 +23,11 @@
     </xd:desc>
   </xd:doc>
   
+  <xsl:output omit-xml-declaration="true"/>
+  
+  <xsl:param name="local:param1" select="'param1'" as="xs:string"/>
+  <xsl:param name="local:param2" select="'param2'" as="xs:string"/>
+  
   <xsl:variable name="test" select="0" as="xs:integer"/>
   <xsl:variable name="local:var1" select="'var1'" as="xs:string"/>
   <xsl:variable name="local:var2" select="'var2'" as="xs:string"/>
@@ -37,11 +43,11 @@
     <xsl:variable name="test" select="$test + 1" as="xs:integer"/>
     <xsl:value-of select="$test"/>
     <xsl:variable name="foo" select="'bar'" as="xs:string"/>
-    <xsl:text expand-text="1">{concat('var1=', $local:var1)}&#10;</xsl:text>
+    <xsl:text expand-text="1">{concat('var1=', $local:var1)}; {concat('param1=', $local:param1)}&#10;</xsl:text>
     <xsl:text expand-text="0">{concat('var2=', $local:var2)}&#10;</xsl:text>
     <?pi {$local:var2} needs to be within an expand-text=true element?>
     <xsl:text expand-text="yes">concat('var3=', $local:var3)&#10;</xsl:text>
-    <xsl:message expand-text="true">Missing brackets, should be : <!--{concat('var3=', $local:var3)} this comment should not be taken into account--></xsl:message>
+    <xsl:message expand-text="true">Missing surrounding curly braces, should be : <!--{concat('var3=', $local:var3)} this comment should not be taken into account--></xsl:message>
     <xsl:text xmlns:ns0="local">expand-text is true here by inheritance : {concat('var4=', $ns0:var4)}&#10;</xsl:text>
     <xsl:element name="{'div'}" expand-text="false">
       <span xsl:expand-text="true">{$local2:var5}</span>
@@ -58,35 +64,53 @@
   </xd:doc>
   <xsl:template match="/*">
     <xsl:variable name="foo" select="'bar'" as="xs:string"/>
-    <xsl:text>&#10;expand-text is true here by inheritance {concat('foo=', $foo)}</xsl:text>
+    <xsl:text>&#10;expand-text is true here by inheritance {concat('foo=', local:capFirstThenLowerCase($foo, ''))}</xsl:text>
+    <xsl:value-of select="concat('foo=', local:capFirstThenLowerCase($foo, ''))"/>
   </xsl:template>
   
+  <xd:doc>
+    <xd:desc>A function to capitalize the first letter and force the others to be lower-case</xd:desc>
+    <xd:param name="s">The string</xd:param>
+    <xd:param name="unusedParam">A param which is not used</xd:param>
+  </xd:doc>
+  <xsl:function name="local:capFirstThenLowerCase" as="xs:string">
+    <xsl:param name="s" as="xs:string"/>
+    <xsl:param name="unusedParam" as="xs:string"/>
+    <xsl:value-of select="concat(upper-case(substring($s,1,1)), lower-case(substring($s,2))) "/>
+  </xsl:function>
   
   <!--<xsl:template match="/" priority="1">
-    <xsl:apply-templates select="//xsl:variable"/>
+    <xsl:text>TEST</xsl:text>
+    <xsl:text>&#10;</xsl:text>
+    <xsl:apply-templates select="*/xsl:function" mode="test"/>
   </xsl:template>-->
   
-  <!--<xsl:template match="xsl:variable[@name = 'foo']">
+  <!--<xsl:template match="text()" mode="test"/>-->
+  
+  <!--<xsl:template match="xsl:function[@name = 'local:capFirstThenLowerCase']" mode="test">
     <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-    <xsl:variable name="var.name" select="@name"/>
-    <xsl:variable name="var.local-name" select="if (contains(@name, ':')) then (substring-after(@name, ':')) else (@name)"/>
-    <xsl:variable name="var.prefix" select="substring-before(@name, ':')"/>
-    <xsl:variable name="var.ns" select="if (contains(@name, ':')) then (namespace-uri-for-prefix($var.prefix, .)) else ('')"/>
-    $var.local-name=<xsl:value-of select="$var.local-name"/>
+    <xsl:text>VARIABLE REF</xsl:text>
     <xsl:text>&#10;</xsl:text>
-    <xsl:text>&#10;</xsl:text>
-    <xsl:for-each select="ancestor::xsl:*[1]//text()[not(ancestor::xsl:*[1] is /*)][normalize-space(.)][ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]">
-      <xsl:variable name="text" select="." as="item()"/>
-      <!-\-<xsl:value-of select="name()"/>="<xsl:value-of select="."/>" : <xsl:value-of select="exists(analyze-string($att, concat('\$((', $NCNAME.reg,'):)?', $var.local-name))//fn:match[namespace-uri-for-prefix(fn:group[1], $att/parent::*) = $var.ns])"/>-\->
-      <!-\-regex: <xsl:value-of select="concat('\$(.*?:)?', $var.local-name)"/><xsl:text>&#10;</xsl:text>-\->
-      <xsl:variable name="analizeString" select="analyze-string($text, concat('\{.*?\$(.*?):?', $var.local-name, '.*\}'))" as="element()"/>
-      <xsl:copy-of select="$analizeString"/>
-      <!-\-<xsl:text>&#10;</xsl:text>-\->
-      count= <xsl:value-of select="count($analizeString//fn:match[not(fn:group) or namespace-uri-for-prefix(substring-before(fn:group[1], ':'), $text/parent::*) = $var.ns])"/>
+    <!-\-<xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes(.)">
+      <xsl:value-of select="concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')"/>
+      <xsl:analyze-string select="." regex="{concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')}">
+        <xsl:matching-substring>
+          <xsl:value-of select="."/>
+        </xsl:matching-substring>
+      </xsl:analyze-string>
+      <xsl:text>&#10;</xsl:text>
+    </xsl:for-each>-\->
+    <xsl:for-each select="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix(.)">
+      <xsl:value-of select="."/>
       <xsl:text>&#10;</xsl:text>
     </xsl:for-each>
-    <!-\-<xsl:value-of select="(some $att  in ancestor::xsl:*[1]//@* satisfies 
-      exists(analyze-string($att, concat('\$(', $NCNAME.reg,')?', $var.local-name))//fn:match[namespace-uri-for-prefix(fn:group[1], $att/parent::*) = $var.ns]))
-      "/>-\->
+    <xsl:text>&#10;</xsl:text>
+    <xsl:text>FUNCTIONS CALL</xsl:text>
+    <xsl:text>&#10;</xsl:text>
+    <xsl:for-each select="xslq:get-xslt-xpath-function-call-with-expanded-prefix(/xsl:stylesheet)">
+      <xsl:value-of select="."/>
+      <xsl:text>&#10;</xsl:text>
+    </xsl:for-each>
   </xsl:template>-->
+
 </xsl:stylesheet>

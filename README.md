@@ -24,7 +24,7 @@ To apply xslt-quality schematron you have to customize Oxygen's schematron like 
  
 - Change the query binding to xslt3 : `queryBinding="xslt3"`
  
-  Because the xslt-quality schematron is using xslt 3.0 functions, it is necessary to harmonize every schematron.
+    Because the xslt-quality schematron is using xslt 3.0 functions, it is necessary to harmonize every schematron.
  
 - Replace the "fn" namespace prefix declaration to "oxy-local":
 
@@ -33,14 +33,20 @@ To apply xslt-quality schematron you have to customize Oxygen's schematron like 
    
     Because xslt-quality schematron is already using the "fn" prefix binded to "http://www.w3.org/2005/xpath-functions"
     
-- *Finally* add this line after the namespaces declarations (<sch:ns>): 
+- Add this line after the namespaces declarations (<sch:ns>): 
 
     ```xml
     <sch:extends href="[path.to.local.clone]/xslt-quality/src/main/sch/checkXSLTstyle.sch"/>
     ```
     
 > - one cannot use `<sch:include>` as explained [here](https://www.oxygenxml.com/forum/topic6804.html);
-> - You also could load only one (or more) modules independently like `xsl-quality.sch`.
+> - You also could load only one (or more) module(s) independently like `xsl-quality.sch`.
+
+- **Finally** make sure "*Allow foreign elements (allow-foreign)*" is activated here: 
+    
+    `Options > Preferences > XML > XML Parser > Schematron` 
+
+    Because xslt-quality schematron embeds xslt function to make xpath rules easier to write.
 
 In this way, both Oxygen schematron (`xsltCustomRules.sch` or `xsltDocCheck.sch`) and xslt-quality schematron (`checkXSLTstyle.sch`) will be applied to your XSLT.
 

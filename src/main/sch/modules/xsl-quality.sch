@@ -181,6 +181,9 @@ CHANGELOG :
   <!--FUNCTIONS-->
   <!--====================================================-->
   
+  <!--FIXME : functions are embeded within the schematron here, they could be loaded from an external file 
+  but it seems not to work due to xml resolver reasons in jing ?-->
+  
   <xsl:function name="xslq:var-or-param-is-referenced-within-its-scope" as="xs:boolean">
     <xsl:param name="var" as="element()"/>
     <xsl:sequence select="xslq:expand-prefix($var/@name, $var) = 
@@ -220,23 +223,25 @@ CHANGELOG :
   <xsl:function name="xslq:get-xslt-xpath-value-template-nodes" as="node()*">
     <xsl:param name="scope" as="element()"/>
     <xsl:sequence select="
-      (: === Attribute Value Template === :)
+      (: === AVT : Attribute Value Template === :)
       $scope//@*[matches(., '\{.*?\}')]
-      (: === Text Value Template === :)
+      (: === TVT : Text Value Template === :)
       (: XSLT 3.0 only when expand-text is activated:)
       |$scope//text()[matches(., '\{.*?\}')]
-      [not(ancestor::xsl:*[1] is /*)](:text outside templates or function is not to be considered, e.g. text within 'xd:doc':)
-      [normalize-space(.)]
+      [not(ancestor::xsl:*[1] is /*)](:ignore text outside templates or function (e.g. text within 'xd:doc'):)
+      [normalize-space(.)](:ignore white-space nodes:)
       [ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
       "/>
   </xsl:function>
   
   <xsl:function name="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix" as="xs:string*">
     <xsl:param name="scope" as="element()"/>
+    <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames--> 
     <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+    <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
     <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
       <xsl:variable name="context" select="parent::*" as="element()"/>
-      <xsl:analyze-string select="." regex="{concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')}">
+      <xsl:analyze-string select="." regex="{'\$(' || $QName.reg || ')'}">
         <xsl:matching-substring>
           <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
         </xsl:matching-substring>
@@ -245,7 +250,7 @@ CHANGELOG :
     <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
       <xsl:variable name="context" select="parent::*" as="element()"/>
       <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
-        <xsl:analyze-string select="." regex="{concat('\$(', $NCNAME.reg, ':?', $NCNAME.reg, ')')}">
+        <xsl:analyze-string select="." regex="{'\$(' || $QName.reg || ')'}">
           <xsl:matching-substring>
             <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
           </xsl:matching-substring>
@@ -256,11 +261,13 @@ CHANGELOG :
   
   <xsl:function name="xslq:get-xslt-xpath-function-call-with-expanded-prefix" as="xs:string*">
     <xsl:param name="scope" as="element()"/>
+    <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames-->
     <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+    <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
     <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
       <xsl:variable name="context" select="parent::*" as="element()"/>
-      <!--<xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')', '\(.*?\)')}"> carefull with nested functions call-->
-      <xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')\(')}">
+      <!--don't catch the closing parenthesis in the function call because it would hide nested functions call-->
+      <xsl:analyze-string select="." regex="{'(' || $QName.reg || ')' || '\('}">
         <xsl:matching-substring>
           <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
         </xsl:matching-substring>
@@ -269,7 +276,7 @@ CHANGELOG :
     <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
       <xsl:variable name="context" select="parent::*" as="element()"/>
       <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
-        <xsl:analyze-string select="." regex="{concat('(', $NCNAME.reg, ':?', $NCNAME.reg, ')', '\(.*?\)')}">
+        <xsl:analyze-string select="." regex="{'(' || $QName.reg || ')' || '\('}">
           <xsl:matching-substring>
             <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
           </xsl:matching-substring>
@@ -291,14 +298,18 @@ CHANGELOG :
   <xsl:function name="xslq:expand-prefix" as="xs:string">
     <xsl:param name="QNameString" as="xs:string"/>
     <xsl:param name="context" as="element()"/>
+    <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames-->
+    <!--NCName = an XML Name, minus the ":"-->
+    <!--cf. https://stackoverflow.com/questions/1631396/what-is-an-xsncname-type-and-when-should-it-be-used-->
     <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-    <xsl:assert test="matches($QNameString, concat('^', $NCNAME.reg, ':?', $NCNAME.reg))"/>
+    <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
+    <xsl:assert test="matches($QNameString, '^' || $QName.reg)"/>
     <!--<xsl:variable name="prefix" select="xs:string(prefix-from-QName(xs:QName(@name)))" as="xs:string"/>-->
     <xsl:variable name="prefix" select="substring-before($QNameString, ':')" as="xs:string"/>
     <!--<xsl:variable name="local-name" select="local-name-from-QName(xs:QName(@name))" as="xs:string"/>-->
     <xsl:variable name="local-name" select="if (contains($QNameString, ':')) then (substring-after($QNameString, ':')) else ($QNameString)" as="xs:string"/>
     <xsl:variable name="ns" select="if ($prefix != '') then (namespace-uri-for-prefix($prefix, $context)) else ('')" as="xs:string"/>
-    <xsl:sequence select="concat('Q{', $ns, '}', $local-name)"/>
+    <xsl:value-of select="'Q{' || $ns, '}' || $local-name" separator=""/>
   </xsl:function>
   
 </schema>

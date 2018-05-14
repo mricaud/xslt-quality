@@ -1,17 +1,23 @@
 Description: [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere
-Start location: 15:4
+Start location: 16:4
 
-Description: [xslqual] Variable local:var2 is unused in its scope
-Start location: 27:67
+Description: [xslqual] Parameter $local:param2 is unused within its scope
+Start location: 29:68
 
-Description: [xslqual] Variable local:var3 is unused in its scope
-Start location: 28:67
+Description: [xslqual] Variable $local:var2 is unused within its scope
+Start location: 33:67
 
-Description: [xslqual] Variable local:var6 is unused in its scope
-Start location: 31:67
+Description: [xslqual] Variable $local:var3 is unused within its scope
+Start location: 34:67
 
-Description: [xslqual] Variable foo is unused in its scope
-Start location: 39:61
+Description: [xslqual] Variable $local:var6 is unused within its scope
+Start location: 37:67
 
-Description: [namespaces] variable @name value "test" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 25:57
+Description: [xslqual] Variable $foo is unused within its scope
+Start location: 45:61
+
+Description: [xslqual] Parameter $unusedParam is unused within its scope
+Start location: 78:51
+
+Description: [namespaces] variable name="test" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 31:57

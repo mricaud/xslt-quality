@@ -7,6 +7,7 @@
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:unused="unused"
   xmlns:local="local"
+  xmlns:local2="local2"
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace=""
   exclude-result-prefixes="#all"
@@ -75,6 +76,10 @@
   <xsl:template match="test" mode="local:test test"/>
   
   <xsl:function name="local:makeLink" as="element()*">
+    <xsl:sequence select="local:makeLink()" xmlns:local="local2"/>
+  </xsl:function>
+  
+  <xsl:function name="local2:makeLink" as="element()*">
     <xsl:for-each select="1 to 10">
       <link/>
     </xsl:for-each>

@@ -1,95 +1,101 @@
 Description: [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere
-Start location: 13:4
+Start location: 14:4
 
-Description: [xslqual] Variable foo is unused in its scope
-Start location: 30:61
-
-Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 31:51
+Description: [xslqual] Variable $foo is unused within its scope
+Start location: 31:61
 
 Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 45:29
-
-Description: [xslqual] Variable var1 is unused in its scope
-Start location: 45:29
+Start location: 32:51
 
 Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 49:44
+Start location: 46:29
 
-Description: [xslqual] Variable var2 is unused in its scope
-Start location: 49:44
+Description: [xslqual] Variable $var1 is unused within its scope
+Start location: 46:29
 
-Description: [xslqual] Variable var3 is unused in its scope
-Start location: 53:63
+Description: [xslqual] Assign value to a variable using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
+Start location: 50:44
+
+Description: [xslqual] Variable $var2 is unused within its scope
+Start location: 50:44
+
+Description: [xslqual] Variable $var3 is unused within its scope
+Start location: 54:63
 
 Description: [xslqual] Assign value to a parameter using the 'select' syntax if assigning a value with xsl:value-of (or xsl:sequence)
-Start location: 57:28
+Start location: 58:28
 
-Description: [xslqual] Named template in stylesheet in unused
-Start location: 69:29
+Description: [xslqual] Parameter $param4 is unused within its scope
+Start location: 58:28
+
+Description: [xslqual] Named template in unused the stylesheet
+Start location: 70:29
 
 Description: [xslqual] Avoid using the operator // near the root of a large tree
-Start location: 70:37
+Start location: 71:37
 
-Description: [xslqual] Stylesheet function is unused
-Start location: 77:55
-
-Description: [common] Should you use xsl:apply-template instead of xsl:for-each
-Start location: 34:30
+Description: [xslqual] Function local:makeLink is unused in the stylesheet
+Start location: 78:55
 
 Description: [common] Should you use xsl:apply-template instead of xsl:for-each
-Start location: 70:37
+Start location: 35:30
+
+Description: [common] Should you use xsl:apply-template instead of xsl:for-each
+Start location: 71:37
 
 Description: [documentation] Please add a documentation block for the whole stylesheet : <xd:doc scope="stylesheet">
-Start location: 13:4
+Start location: 14:4
 
 Description: [typing] xsl:variable is not typed Add @as attribute
-Start location: 45:29
+Start location: 46:29
 
 Description: [typing] xsl:param is not typed Add @as attribute
-Start location: 57:28
+Start location: 58:28
 
-Description: [namespaces] variable @name value "var1" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 45:29
+Description: [namespaces] variable name="var1" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 46:29
 
-Description: [namespaces] variable @name value "var2" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 49:44
+Description: [namespaces] variable name="var2" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 50:44
 
-Description: [namespaces] variable @name value "var3" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 53:63
+Description: [namespaces] variable name="var3" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 54:63
 
-Description: [namespaces] param @name value "param4" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 57:28
+Description: [namespaces] param name="param4" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 58:28
 
-Description: [namespaces] template @name value "main" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 69:29
+Description: [namespaces] template name="main" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+Start location: 70:29
 
 Description: [namespaces] Use a namespace prefix instead of *:
-Start location: 70:37
+Start location: 71:37
 
 Description: [namespaces] template @mode value "test" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
-Start location: 75:54
+Start location: 76:54
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 31:51
+Start location: 32:51
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 45:29
+Start location: 46:29
 
 Description: [writing] Use @select to assign a value to xsl:variable
-Start location: 49:44
+Start location: 50:44
 
 Description: [writing] Use @select to assign a value to xsl:param
-Start location: 57:28
+Start location: 58:28
 
 Description: There is no documentation for the template with match "/".
-Start location: 61:27
+Start location: 62:27
 
 Description: There is no documentation for the template with name "main".
-Start location: 69:29
+Start location: 70:29
 
 Description: There is no documentation for the template with match "test" , mode "local:test test".
-Start location: 75:54
+Start location: 76:54
 
 Description: There is no documentation for the function with name "local:makeLink".
-Start location: 77:55
+Start location: 78:55
+
+Description: There is no documentation for the function with name "local2:makeLink".
+Start location: 82:56
