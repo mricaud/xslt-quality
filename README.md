@@ -25,14 +25,7 @@ To apply xslt-quality schematron you have to customize Oxygen's schematron like 
 - Change the query binding to xslt3 : `queryBinding="xslt3"`
  
     Because the xslt-quality schematron is using xslt 3.0 functions, it is necessary to harmonize every schematron.
- 
-- Replace the "fn" namespace prefix declaration to "oxy-local":
 
-    - Replace `xmlns:fn="function.namespace"` by `xmlns:oxy-local="function.namespace"`
-    - Replace "fn:" to "oxy-local:" in the whole file
-   
-    Because xslt-quality schematron is already using the "fn" prefix binded to "http://www.w3.org/2005/xpath-functions"
-    
 - Add this line after the namespaces declarations (<sch:ns>): 
 
     ```xml

@@ -14,7 +14,6 @@ CHANGELOG :
   xmlns="http://purl.oclc.org/dsdl/schematron" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:xslq="https://github.com/mricaud/xsl-quality"
   queryBinding="xslt3" 
@@ -181,8 +180,8 @@ CHANGELOG :
   <!--FUNCTIONS-->
   <!--====================================================-->
   
-  <!--FIXME : functions are embeded within the schematron here, they could be loaded from an external file 
-  but it seems not to work due to xml resolver reasons in jing ?-->
+  <!--FIXME : functions are embedded within the schematron here, they could be loaded from an external file 
+  but it seems not to work due to XML resolver reasons with Jing ?-->
   
   <xsl:function name="xslq:var-or-param-is-referenced-within-its-scope" as="xs:boolean">
     <xsl:param name="var" as="element()"/>
@@ -194,44 +193,6 @@ CHANGELOG :
     <xsl:param name="function" as="element()"/>
     <xsl:sequence select="xslq:expand-prefix($function/@name, $function) = 
       xslq:get-xslt-xpath-function-call-with-expanded-prefix($function/ancestor::xsl:*[last()])"/>
-  </xsl:function>
-  
-  <!--xsl attributes with xpath inside-->
-  <xsl:function name="xslq:get-xslt-xpath-evaluated-attributes" as="attribute()*">
-    <xsl:param name="scope" as="element()"/>
-    <xsl:sequence select="$scope//
-      (
-      xsl:accumulator/@initial-value | xsl:accumulator-rule/@select | xsl:accumulator-rule/@match |
-      xsl:analyze-string/@select | xsl:apply-templates/@select | xsl:assert/@test | xsl:assert/@select |
-      xsl:attribute/@select | xsl:break/@select | xsl:catch/@select | xsl:comment/@select |
-      xsl:copy/@select | xsl:copy-of/@select | xsl:evaluate/@xpath | xsl:evaluate/@context-item |
-      xsl:evaluate/@namespace-context | xsl:evaluate/@with-params | xsl:for-each/@select | 
-      xsl:for-each-group/@select | xsl:for-each-group/@group-by | xsl:for-each-group/@group-adjacent | 
-      xsl:for-each-group/@group-starting-with | xsl:for-each-group/@group-ending-with | 
-      xsl:if/@test | xsl:iterate/@select | xsl:key/@match | xsl:key/@use | xsl:map-entry/@key |
-      xsl:merge-key/@select | xsl:merge-source/@for-each-item | xsl:merge-source/@for-each-source | 
-      xsl:merge-source/@select | xsl:message/@select | xsl:namespace/@select |
-      xsl:number/@value | xsl:number/@select | xsl:number/@count | xsl:number/@from | 
-      xsl:on-completion/@select | xsl:on-empty/@select | xsl:on-non-empty/@select |
-      xsl:param/@select | xsl:perform-sort/@select | xsl:processing-instruction/@select | 
-      xsl:sequence/@select | xsl:sort/@select | xsl:template/@match | xsl:try/@select | 
-      xsl:value-of/@select | xsl:variable/@select | xsl:when/@test | xsl:with-param/@select
-      )
-      "/>
-  </xsl:function>
-  
-  <xsl:function name="xslq:get-xslt-xpath-value-template-nodes" as="node()*">
-    <xsl:param name="scope" as="element()"/>
-    <xsl:sequence select="
-      (: === AVT : Attribute Value Template === :)
-      $scope//@*[matches(., '\{.*?\}')]
-      (: === TVT : Text Value Template === :)
-      (: XSLT 3.0 only when expand-text is activated:)
-      |$scope//text()[matches(., '\{.*?\}')]
-      [not(ancestor::xsl:*[1] is /*)](:ignore text outside templates or function (e.g. text within 'xd:doc'):)
-      [normalize-space(.)](:ignore white-space nodes:)
-      [ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
-      "/>
   </xsl:function>
   
   <xsl:function name="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix" as="xs:string*">
@@ -283,6 +244,44 @@ CHANGELOG :
         </xsl:analyze-string>
       </xsl:for-each>
     </xsl:for-each>
+  </xsl:function>
+  
+  <!--xsl attributes with xpath inside-->
+  <xsl:function name="xslq:get-xslt-xpath-evaluated-attributes" as="attribute()*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:sequence select="$scope//
+      (
+      xsl:accumulator/@initial-value | xsl:accumulator-rule/@select | xsl:accumulator-rule/@match |
+      xsl:analyze-string/@select | xsl:apply-templates/@select | xsl:assert/@test | xsl:assert/@select |
+      xsl:attribute/@select | xsl:break/@select | xsl:catch/@select | xsl:comment/@select |
+      xsl:copy/@select | xsl:copy-of/@select | xsl:evaluate/@xpath | xsl:evaluate/@context-item |
+      xsl:evaluate/@namespace-context | xsl:evaluate/@with-params | xsl:for-each/@select | 
+      xsl:for-each-group/@select | xsl:for-each-group/@group-by | xsl:for-each-group/@group-adjacent | 
+      xsl:for-each-group/@group-starting-with | xsl:for-each-group/@group-ending-with | 
+      xsl:if/@test | xsl:iterate/@select | xsl:key/@match | xsl:key/@use | xsl:map-entry/@key |
+      xsl:merge-key/@select | xsl:merge-source/@for-each-item | xsl:merge-source/@for-each-source | 
+      xsl:merge-source/@select | xsl:message/@select | xsl:namespace/@select |
+      xsl:number/@value | xsl:number/@select | xsl:number/@count | xsl:number/@from | 
+      xsl:on-completion/@select | xsl:on-empty/@select | xsl:on-non-empty/@select |
+      xsl:param/@select | xsl:perform-sort/@select | xsl:processing-instruction/@select | 
+      xsl:sequence/@select | xsl:sort/@select | xsl:template/@match | xsl:try/@select | 
+      xsl:value-of/@select | xsl:variable/@select | xsl:when/@test | xsl:with-param/@select
+      )
+      "/>
+  </xsl:function>
+  
+  <xsl:function name="xslq:get-xslt-xpath-value-template-nodes" as="node()*">
+    <xsl:param name="scope" as="element()"/>
+    <xsl:sequence select="
+      (: === AVT : Attribute Value Template === :)
+      $scope//@*[matches(., '\{.*?\}')]
+      (: === TVT : Text Value Template === :)
+      (: XSLT 3.0 only when expand-text is activated:)
+      |$scope//text()[matches(., '\{.*?\}')]
+      [not(ancestor::xsl:*[1] is /*)](:ignore text outside templates or function (e.g. text within 'xd:doc'):)
+      [normalize-space(.)](:ignore white-space nodes:)
+      [ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
+      "/>
   </xsl:function>
   
   <xsl:function name="xslq:extract-xpath-from-value-template" as="xs:string*">
