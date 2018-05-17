@@ -22,7 +22,6 @@ CHANGELOG :
   
   <ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
   <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
-  <ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
   <ns prefix="xslq" uri="https://github.com/mricaud/xsl-quality"/>
   
