@@ -48,17 +48,17 @@ Later, I intend to make this repo available on Maven Central, then you should be
 
 ## TODO
 
-1. #4 Move rule "use-resolve-uri-in-loading-function" elsewhere cause it's too specific?
-1. #5 Use [quickFix](http://www.schematron-quickfix.com/quickFix/guide.html) / diagnostic?
-1. #6 Check for conventions: 
+1. [#4](https://github.com/mricaud/xslt-quality/issues/4) Move rule "use-resolve-uri-in-loading-function" elsewhere cause it's too specific?
+1. [#5](https://github.com/mricaud/xslt-quality/issues/5) Use [quickFix](http://www.schematron-quickfix.com/quickFix/guide.html) / diagnostic?
+1. [#6](https://github.com/mricaud/xslt-quality/issues/6) Check for conventions: 
     - https://google.github.io/styleguide/xmlstyle.html
     - http://blog.xml.rocks/xslt-naming-conventions
     - http://blog.xml.rocks/structuring-xslt-code
-1. #7 xsl-qual : have a look at comments on http://markmail.org/message/y5cunpvfpy54wqe6
-1. #8 Named template for generating XML elements VS functions to return atomic values as a good practice?
-1. #9 Should the template ordering be watched by the schematron (copy template at the end, templates with @mode together, etc.)
-1. #10 Unused templates, functions, global variables/parameters might not be an error (when the xsl is a library)
-1. #11 Check that XSLT default templates are not used like:
+1. [#7](https://github.com/mricaud/xslt-quality/issues/7) xsl-qual : have a look at comments on http://markmail.org/message/y5cunpvfpy54wqe6
+1. [#8](https://github.com/mricaud/xslt-quality/issues/8) Named template for generating XML elements VS functions to return atomic values as a good practice?
+1. [#9](https://github.com/mricaud/xslt-quality/issues/9) Should the template ordering be watched by the schematron (copy template at the end, templates with @mode together, etc.)
+1. [#10](https://github.com/mricaud/xslt-quality/issues/10) Unused templates, functions, global variables/parameters might not be an error (when the xsl is a library)
+1. [#11](https://github.com/mricaud/xslt-quality/issues/11) Check that XSLT default templates are not used like:
 
     ```xml 
     <xsl:template match="/">
@@ -66,8 +66,8 @@ Later, I intend to make this repo available on Maven Central, then you should be
     </xsl:template>
     ```
 
-1. #12 Using `<xsl:value-of>` where `<xsl:sequence>` is enough
-1. #13 Writing:
+1. [#12](https://github.com/mricaud/xslt-quality/issues/12) Using `<xsl:value-of>` where `<xsl:sequence>` is enough
+1. [#13](https://github.com/mricaud/xslt-quality/issues/13) Writing:
 
    That mean parsing the xsl as text here, something like:
    
