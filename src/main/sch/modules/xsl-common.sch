@@ -106,7 +106,7 @@
   <pattern id="xslt-quality_xslt-3.0">
     <rule context="xsl:import[$xslt.version = '3.0']">
       <report id="xslt-quality_xslt-3.0-import-first" 
-        test="following-sibling::xd:doc" role="info">
+        test="following-sibling::xd:doc[@scope = 'stylesheet']" role="info">
         [XSLT-3.0] When using XSLT 3.0 xsl:import may come after the xd:doc block
       </report>
     </rule>
