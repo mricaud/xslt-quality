@@ -64,6 +64,11 @@ CHANGELOG :
     <active pattern="writing"/>
 	</phase>-->
 
+  <!--<pattern id="test">
+    <rule context="/*">
+      <report test="function-available('xslq:var-or-param-is-referenced-within-its-scope')">Yes, I can access the core functions of xslt-quality.xsl</report>
+    </rule>
+  </pattern>-->
   <include href="modules/xslt-quality.sch"/>
   <include href="modules/xslt-quality_common.sch"/>
   <include href="modules/xslt-quality_documentation.sch"/>
