@@ -226,6 +226,3 @@
     </report>
   </rule>
 </pattern>
-  
-  <!--<xsl:include href="xslt-quality.xsl"/>-->
-  

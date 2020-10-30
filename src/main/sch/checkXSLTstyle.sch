@@ -20,7 +20,7 @@ CHANGELOG :
   queryBinding="xslt3" 
   id="checkXSLTstyle.sch"
   >
-  <xsl:include href="modules/xslt-quality.xsl"/>
+  <xsl:include href="../xsl/xslt-quality.xsl"/>
   
   <ns prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>
   <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
