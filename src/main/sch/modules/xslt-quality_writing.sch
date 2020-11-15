@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pattern   
-  xmlns="http://purl.oclc.org/dsdl/schematron" 
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:saxon="http://saxon.sf.net/" id="xslt-quality_writing">
+  xmlns:saxon="http://saxon.sf.net/"
+  xml:lang="en"
+  id="xslt-quality_writing">
+  
+  <xd:doc>
+    <xd:desc>
+      <xd:p>These rules are about XSLT writing quality</xd:p>
+    </xd:desc>
+  </xd:doc>
+  
   <rule context="xsl:attribute | xsl:namespace | xsl:variable | xsl:param | xsl:with-param">
     <xd:doc>
       <xd:desc xml:lang="en">If you don't need special XSLT instruction to calculate a variable, a param (or any other attribute, namespace) then use the short "select=" syntax that make your code less verbose and easier to read.</xd:desc>
@@ -15,4 +23,5 @@
       [writing] Use @select to assign a value to <name/>
     </report>
   </rule>
+  
 </pattern>

@@ -7,10 +7,10 @@
   
   <groupId>org.mricaud.xml</groupId>
   <artifactId>xslt-quality</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   
-  <name>XSLT Quality</name>
+  <name>XSLT Quality Schematron</name>
   <description>A schematron to test your XSLT quality</description>
   <inceptionYear>2018</inceptionYear>
   <url>https://github.com/mricaud/xslt-quality</url>
@@ -26,16 +26,29 @@
     <developer>
       <name>Matthieu Ricaud-Dussarget</name>
       <email>ricaudm@gmail.com</email>
+      <url>https://github.com/mricaud/</url>
       <roles>
         <role>developer</role>
         <role>project owner</role>
       </roles>
       <timezone>UTC+1</timezone>
-      <url>https://github.com/mricaud/</url>
+    </developer>
+    <developer>
+      <name>Jim Etevenard</name>
+      <url>https://github.com/jimetevenard</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>UTC+1</timezone>
+    </developer>
+    <developer>
+      <name>Joel Kalvesmaki</name>
+      <url>https://github.com/Arithmeticus</url>
+      <roles>
+        <role>developer</role>
+      </roles>
     </developer>
   </developers>
-  
-  
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,11 +57,10 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/sch</directory>
+        <directory>src/main</directory>
         <filtering>false</filtering>
       </resource>
     </resources>
   </build>
-
   
 </project>

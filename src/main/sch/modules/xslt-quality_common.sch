@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pattern  
-  xmlns="http://purl.oclc.org/dsdl/schematron" 
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:saxon="http://saxon.sf.net/" id="xslt-quality_common">
+  xmlns:saxon="http://saxon.sf.net/"
+  xml:lang="en"
+  id="xslt-quality_common">
+  
+  <xd:doc>
+    <xd:desc>
+      <xd:p>These rules are common XSLT checks that doesn't belong to other category (documentation, namespaces, typing, etc.)</xd:p>
+    </xd:desc>
+  </xd:doc>
+  
   <rule context="xsl:for-each">
     <xd:doc>
       <xd:desc xml:lang="en">Using xsl:for-each on nodes may be a clue of procedural programming. XSLT is rather a rule-programming language, data-driven. You should maybe consider using xsl:apply-templates instead</xd:desc>
@@ -20,6 +28,7 @@
       [common] Should you use xsl:apply-template instead of xsl:for-each 
     </report>
   </rule>
+  
   <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test">
     <xd:doc>
       <xd:desc xml:lang="en">Using concatenation to resolve URI is not generic (windows and linux path are not the same) - Consider unsing the on-purpose resolve-uri() function instead</xd:desc>
@@ -29,4 +38,5 @@
       [common] Avoid using concat within document() or doc() function, use resolve-uri() instead (you may use static-base-uri() or base-uri())
     </report>
   </rule>
-</pattern>  
+  
+</pattern>
