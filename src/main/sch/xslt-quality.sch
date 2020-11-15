@@ -40,7 +40,7 @@
   <!--           INCLUSIONS               -->
   <!--====================================-->
   
-  <include href="modules/xslt-quality.sch"/>
+  <include href="modules/xslt-quality_mukulgandhi-rules.sch"/>
   <include href="modules/xslt-quality_common.sch"/>
   <include href="modules/xslt-quality_documentation.sch"/>
   <include href="modules/xslt-quality_namespaces.sch"/>

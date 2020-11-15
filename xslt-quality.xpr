@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="22.0">
+<project version="20.1">
     <meta>
         <filters directoryPatterns="" filePatterns="xslt-quality.xpr" positiveFilePatterns="" showHiddenFiles="false"/>
         <options>
-            <serialized version="22.0" xml:space="preserve">
+            <serialized version="20.1" xml:space="preserve">
                 <serializableOrderedMap>
+                    <entry>
+                        <String>enable.project.master.files.support</String>
+                        <Boolean>true</Boolean>
+                    </entry>
                     <entry>
                         <String>validation.scenario.associations</String>
                         <scenarioAssociation-array>
@@ -20,11 +24,6 @@
                                 <field name="scenarioTypes">
                                     <list>
                                         <String>Validation_scenario</String>
-                                    </list>
-                                </field>
-                                <field name="scenarioStorageLocations">
-                                    <list>
-                                        <Byte>2</Byte>
                                     </list>
                                 </field>
                             </scenarioAssociation>
@@ -96,6 +95,9 @@
         </options>
     </meta>
     <projectTree name="xslt-quality.xpr">
+        <folder masterFiles="true" name="Master Files">
+            <file name="src/main/sch/xslt-quality.sch"/>
+        </folder>
         <folder path="."/>
     </projectTree>
 </project>

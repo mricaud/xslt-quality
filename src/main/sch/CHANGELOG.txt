@@ -1,5 +1,5 @@
 CHANGELOG 
-
+- 2020-11-15 : Change main schematron filename to xslt-quality.sch
 - 2020-10-16 : Restructured to conform to ISO practices; included core XSLT module
 - 2018-05-13 : Take into account Text Value Template with XSLT 3.0 and namespaced variables and its scope
 - 2018-05-11 : #xslqual-SettingValueOfVariableIncorrectly, #xslqual-SettingValueOfParamIncorrectly : take xsl:sequence into account in addition to xsl:value-of
