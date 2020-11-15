@@ -5,12 +5,12 @@ XSLT Quality checks your XSLT to see if it adheres to good or best practices.
 [xslt-quality.sch](src/main/sch/xslt-quality.sch): the master Schematron file. This is the one (and only) Schematron file you need to point to. It has a number of submodules for groups of tests:
 
 - [xslt-quality.sch](src/main/sch/module/xslt-quality_mukulgandhi-rules.sch): Mukul Gandhi XSL QUALITY [rules](http://gandhimukul.tripod.com/xslt/xslquality.html)
-- [xslt-quality_common.sch](src/main/sch/module/xslt-quality_common.sch): a few common tests
+- [xslt-quality_common.sch](src/main/sch/module/xslt-quality_common.sch): a few common tests without specific category
 - [xslt-quality_documentation.sch](src/main/sch/module/xslt-quality_documentation.sch): tests on documentation
 - [xslt-quality_namespaces.sch](src/main/sch/module/xslt-quality_namespaces.sch): tests regarding namespaces
 - [xslt-quality_typing.sch](src/main/sch/module/xslt-quality_typing.sch): tests on variable / parameter types 
 - [xslt-quality_writing.sch](src/main/sch/module/xslt-quality_writing.sch): tests on writing
-- [xslt-quality_writing.sch](src/main/sch/module/xslt-quality_writing.sch): tests on XSLT 3.0
+- [xslt-quality_xslt-3.0.sch](src/main/sch/module/xslt-quality_xslt-3.0.sch): tests on specific XSLT 3.0 features
 
 The modules listed above are subject to change in number, name, and contents, but the master Schematron file will not (from XSLT Quality 1.0.0)
 
@@ -25,13 +25,23 @@ All other code is released under Apache License Version 2.0
 
 ## Technical notes
 
+### Modularization 
+
+XSLT Quality uses schematron `sch:include` to load each sub-module. Unlike `xsl:include` that allow to load a full XSLT, `sch:include` works like replacing the call by the content of the module.
+
+For this reason, submodule only contain `sch:pattern`, and every other sch elements (`sch:ns`, `sch:let`, `sch:diagnostic`, etc.) has to be declared in the main schematron [xslt-quality.sch](src/main/sch/xslt-quality.sch)
+
+Some submodules might not be valid (missing variable, dignostic, etc.), but opening the Oxygen project (xslt-quality.xpr) will show them valid as `xslt-quality.sch` has been added as "Master file" in the project.  
+
+### role attribute
 XSLT Quality is using Schematron applied on any XSLT and generates errors, warning and info. At this end we use the `@role` attribute.
 
-The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
-The Schematron engine you are using must then this extension, typically by setting `allow-foreign` parameter to true.
+### XSLT library : allow foreign
 
-Later, I intend to make this repo available on Maven Central, then you should be able to load `xslt-quality.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
-[cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
+The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
+The Schematron engine you are using must support this extension, typically by setting `allow-foreign` parameter to true.
+
+### role attribute
 
 ## Using XSLT Quality with Oxygen
 
@@ -60,6 +70,11 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. Click OK (Three times)
 
 In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT.
+
+## MAVEN
+
+Later, I intend to make XSLT-quality available on Maven Central, then you should be able to load `xslt-quality.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
+[cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
 
 ## TODO
 
