@@ -3,6 +3,7 @@
 XSLT Quality checks your XSLT to see if it adheres to good or best practices.
 
 [checkXSLTstyle.sch](src/main/sch/checkXSLTstyle.sch): the master Schematron file. This is the one (and only) Schematron file you need to point to. It has a number of submodules for groups of tests:
+
 - [xslt-quality.sch](src/main/sch/module/xslt-quality.sch): general-purpose tests
 - [xslt-quality_common.sch](src/main/sch/module/xslt-quality_common.sch): a few common tests
 - [xslt-quality_documentation.sch](src/main/sch/module/xslt-quality_documentation.sch): tests on documentation
@@ -11,7 +12,7 @@ XSLT Quality checks your XSLT to see if it adheres to good or best practices.
 - [xslt-quality_writing.sch](src/main/sch/module/xslt-quality_writing.sch): tests on writing
 - [xslt-quality_writing.sch](src/main/sch/module/xslt-quality_writing.sch): tests on XSLT 3.0
 
-The modules listed above are subject to change in number, name, and contents, but the master Schematron file will not.
+The modules listed above are subject to change in number, name, and contents, but the master Schematron file will not (from XSLT Quality 1.0.0)
 
 The Schematron suite depends upon an XSLT library whose master file is here: 
 [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl).
@@ -20,59 +21,45 @@ The Schematron suite depends upon an XSLT library whose master file is here:
 
 A subset of this code is a revision of code written by [Mukul Gandhi in his XSL QUALITY project](http://gandhimukul.tripod.com/xslt/xslquality.html). Special thanks to him for allowing me to implement his rules under Apache License Version 2.0.
 
-All other code is released under....
+All other code is released under Apache License Version 2.0
 
-## Using XSLT Quality with Oxygen
+## Technical notes
 
-To use XSLT Quality in Oxygen do the following:
+XSLT Quality is using Schematron applied on any XSLT and generates errors, warning and info. At this end we use the `@role` attribute.
 
-1. Open up an XSLT file.
-1. Click Configure Validation Scenario(s)... (picture of a wrench over a red check mark)
-1. Select the XSLT option and click "Duplicate," and give the new option a name such as XSLT Quality.
-1. Delete the items there (they will get applied in parallel)
-1. Click Add.
-1. In the new entry click "XML Document" under File type.
-1. Double-click on the Schema column.
-1. Click Use custom schema, and use the URL bar to point to `checkXSLTstyle.sch`.
-1. Click OK (twice).
-1. Back in the Configure Validation Scenario(s) menu, click the checkboxes for both the XSLT and the new scenario you have created.
-1. Click Save and Close.
-
-That may seem like a lot of steps, but each one is pretty straightforward. If you are uncertain, open up the [XSLT Quality project file](xslt-quality.xpr) and then open up [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl). If you click on the Configure Validation Scenario(s)... menu you will see the result of the above steps.
-
-Here is another method. From version 19, Oxygen has a default schematron automaticaly applied to any edited XSLT, aiming at checking code quality:
-
-`[INSTALL.DIR]/Oxygen XML Developer [version]/frameworks/xslt/sch/xsltCustomRules.sch`
-
-(or `xsltDocCheck.sch` for Oxygen 19.1+)
-
-To apply xslt-quality schematron you have to customize Oxygen's schematron like this:
-
-- Be sure you have the rights privileges to write this file
- 
-- Change the query binding to xslt3 : `queryBinding="xslt3"`
- 
-    Because the xslt-quality schematron is using xslt 3.0 functions, it is necessary to harmonize every schematron.
-
-- Add this line after the namespaces declarations (<sch:ns>): 
-
-    ```xml
-    <sch:extends href="[path.to.local.clone]/xslt-quality/src/main/sch/checkXSLTstyle.sch"/>
-    ```
-    
-> - one cannot use `<sch:include>` as explained [here](https://www.oxygenxml.com/forum/topic6804.html);
-> - You also could load only one (or more) module(s) independently like `xsl-quality.sch`.
-
-- **Finally** make sure "*Allow foreign elements (allow-foreign)*" is activated here: 
-    
-    `Options > Preferences > XML > XML Parser > Schematron` 
-
-    Because xslt-quality schematron embeds xslt functions, to construct XPath expressions in the tests.
-
-In this way, both Oxygen schematron (`xsltCustomRules.sch` or `xsltDocCheck.sch`) and xslt-quality schematron (`checkXSLTstyle.sch`) will be applied to your XSLT.
+The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
+The Schematron engine you are using must then this extension, typically by setting `allow-foreign` parameter to true.
 
 Later, I intend to make this repo available on Maven Central, then you should be able to load `checkXSLTstyle.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
 [cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
+
+## Using XSLT Quality with Oxygen
+
+First make sure "*Allow foreign elements (allow-foreign)*" is activated here:
+
+1. Go to Options > Preferences > XML > XML Parser > Schematron
+1. Check the box "Allow foreign elements (allow-foreign)" if it's not
+1. Click OK
+
+### Validating a single XSLT
+
+You can use XSLT Quality in Oxygen by creating a validation scenario that you apply to the XSLT you want to valid.
+
+### Automatic validation of each XSLT
+
+It's also possible to get any XSLT in Oxygen to be validated with XSLT quality without applying any specific scenario, by doing the following:
+
+1. Go to Options > Preferences > Document type association
+1. Select "XSLT" and click Edit
+1. Go to "Validation" tab
+1. Double click on the single scenario "XSLT"
+1. Click Add
+1. In the new entry click "XML Document" under File type.
+1. Double-click on the Schema column.
+1. Click Use custom schema, and use the URL bar to point to `checkXSLTstyle.sch`
+1. Click OK (Three times)
+
+In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT.
 
 ## TODO
 
