@@ -31,7 +31,7 @@ XSLT Quality uses schematron `sch:include` to load each sub-module. Unlike `xsl:
 
 For this reason, submodule only contain `sch:pattern`, and every other sch elements (`sch:ns`, `sch:let`, `sch:diagnostic`, etc.) has to be declared in the main schematron [xslt-quality.sch](src/main/sch/xslt-quality.sch)
 
-Some submodules might not be valid (missing variable, dignostic, etc.), but opening the Oxygen project (xslt-quality.xpr) will show them valid as `xslt-quality.sch` has been added as "Master file" in the project.  
+Some submodules might not be valid (missing variable, dignostic, etc.), but opening the Oxygen project ([xslt-quality.xpr](xslt-quality.xpr)) will show them valid as `xslt-quality.sch` has been added as "Master file" in the project.  
 
 ### role attribute
 XSLT Quality is using Schematron applied on any XSLT and generates errors, warning and info. At this end we use the `@role` attribute.
@@ -41,7 +41,6 @@ XSLT Quality is using Schematron applied on any XSLT and generates errors, warni
 The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
 The Schematron engine you are using must support this extension, typically by setting `allow-foreign` parameter to true.
 
-### role attribute
 
 ## Using XSLT Quality with Oxygen
 
