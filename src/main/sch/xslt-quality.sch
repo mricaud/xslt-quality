@@ -5,7 +5,7 @@
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:saxon="http://saxon.sf.net/"
   queryBinding="xslt3" 
-  id="checkXSLTstyle.sch"
+  id="xslt-quality.sch"
   >
   
   <xd:doc>
@@ -21,6 +21,7 @@
   <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
   <ns prefix="xslq" uri="https://github.com/mricaud/xsl-quality"/>
+  <ns prefix="sqf" uri="http://www.schematron-quickfix.com/validator/process"/>
   
   <title>XSLT Quality Schematron</title>
   
@@ -47,5 +48,6 @@
   <include href="modules/xslt-quality_typing.sch"/>
   <include href="modules/xslt-quality_writing.sch"/>
   <include href="modules/xslt-quality_xslt-3.0.sch"/>
+  <include href="modules/xslt-quality_parameters.sch"/>
   
 </schema>

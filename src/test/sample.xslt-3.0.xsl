@@ -19,7 +19,7 @@
   
   <xd:doc scope="stylesheet">
     <xd:desc>
-      <xd:p>This is a XSLT 3.0 sample so we can focus on schematron rules adapted to XSLT 3.0 with checkXSLTstyle.sch</xd:p>
+      <xd:p>This is a XSLT 3.0 sample so we can focus on schematron rules adapted to XSLT 3.0 with xslt-quality.sch</xd:p>
     </xd:desc>
   </xd:doc>
   

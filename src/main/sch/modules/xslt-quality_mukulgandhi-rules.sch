@@ -21,46 +21,45 @@
     </xd:desc>
   </xd:doc>
   
-  <rule context="xsl:stylesheet">
-    
+  <rule context="xsl:stylesheet | xsl:transform">
+    <let name="declared-prefixes" value="in-scope-prefixes(.)[not(. = ('xml', ''))]"/>
+    <let name="all-prefixes" value="xslq:get-namespace-prefixes(.)"/>
+    <let name="unused-prefixes" value="$declared-prefixes[not(. = $all-prefixes)]"/>
+    <let name="count-unused-prefixes" value="count($unused-prefixes)"/>
     <xd:doc>
-      <xd:desc xml:lang="en">Consider it's not usefull to keep unused prefix declaration. Delete them will make the xslt lighter and easier to read.</xd:desc>
+      <xd:desc xml:lang="en">Deleting unused prefix declarations will make XSLT lighter and easier to read.</xd:desc>
       <xd:desc xml:lang="fr">On considère qu'il n'est pas nécessaire de conserver les déclarations de préfixe qui ne sont pas utilisé. Les supprimer rendra la XSLT moins lourde et plus lisible.</xd:desc>
     </xd:doc>
-    <assert id="xslqual-RedundantNamespaceDeclarations" role="warning"
-      test="every $s in in-scope-prefixes(.)[not(. = ('xml', ''))] satisfies 
-      exists(//(*[not(self::xsl:stylesheet)] | @*[not(parent::xsl:*)] | xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode)
-      [starts-with(name(), concat($s, ':')) or starts-with(., concat($s, ':'))])">
-      <!--[xslqual] There are redundant namespace declarations in the xsl:stylesheet element-->
-      [xslqual] There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere 
-    </assert>
+    <report id="xslqual-RedundantNamespaceDeclarations" role="warning"
+      test="exists($unused-prefixes)"> [xslqual] <value-of select="$count-unused-prefixes"/> namespace 
+      <value-of select="'prefix' || xslq:plural-form($count-unused-prefixes, 'es')"/> <value-of select="xslq:plural-form($count-unused-prefixes, 'are', 'is')"/> declared but
+      are used nowhere: <value-of select="string-join($unused-prefixes, ', ')"/>
+    </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Consider using too much template in the same XSLT make it difficult to read, maybe the code might be split in several modules.</xd:desc>
+      <xd:desc xml:lang="en">Too many templates in the same mode are difficult to read. Maybe the code should be split in several modes.</xd:desc>
       <xd:desc xml:lang="fr">On considère qu'utiliser trop de template rend la XSLT difficile à lire, peut-être que le code devrait être découpé en modules</xd:desc>
     </xd:doc>
     <report id="xslqual-TooManySmallTemplates" role="info"
-      test="count(//xsl:template[@match and not(@name)][count(*) &lt; 3]) &gt;= 10">
-      [xslqual] Too many low granular templates in the stylesheet (10 or more)
-    </report>
+      test="count(xsl:template[@match and not(@name)][count(*) lt $xslq:granular-template-threshold]) ge $xslq:max-granular-templates-per-file"
+      > [xslqual] Too many low granular templates in the stylesheet (<value-of select="$xslq:max-granular-templates-per-file"/> or more) </report>
     
     <xd:doc>
       <xd:desc xml:lang="en">It looks suspicious to have only one template or function in an XSL. If it contains one single template with xsl:for-each inside it could be a non-declarative XSL which is not recommended</xd:desc>
       <xd:desc xml:lang="fr">N'avoir qu'un seul template (ou fonction) dans une XSL est suspect. Si elle ne contient qu'un template avec des xsl:for-each à l'intérieur, alors ça peut être signe d'une XSL non-déclarative ce qui n'es pas recommandé</xd:desc>
     </xd:doc>
     <report id="xslqual-MonolithicDesign" role="warning"
-      test="count(//xsl:template | //xsl:function) = 1">
-      [xslqual] Using a single template/function in the stylesheet. You can modularize the code.
+      test="count(xsl:template | xsl:function) = 1">
+      [xslqual] Using a single template/function in the stylesheet. Perhaps you can convert a singular template or function into a declarative structure.
     </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Not declarating the xs prefix probably mean you will probably not be typing your code (variable, param, functions, etc.)</xd:desc>
+      <xd:desc xml:lang="en">You should declare the xs prefix to data-type your code (variable, param, functions, etc.)</xd:desc>
       <xd:desc xml:lang="fr">Ne pas déclarer le préfixe xs signifie que vous n'allez probablement pas typé votre code (variable, paramètre, fonctions, etc.)</xd:desc>
     </xd:doc>
     <report id="xslqual-NotUsingSchemaTypes" role="info"
       test="(@version = ('2.0', '3.0')) and not(some $x in .//@* satisfies contains($x, 'xs:'))">
-      [xslqual] The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT <value-of select="@version"/> mode
-    </report>
+      [xslqual] The stylesheet is not using a built-in Schema types (xs:string etc.) for XSLT <value-of select="@version"/></report>
   </rule>
   
   <rule context="xsl:output">
@@ -74,7 +73,17 @@
     </report>
   </rule>
   
-  <rule context="xsl:variable">
+  <rule context="/*/xsl:param | /*/xsl:variable">
+
+    <xd:doc>
+      <xd:desc xml:lang="en">Check to see if global parameters and variables are really used.</xd:desc>
+    </xd:doc>
+    <assert id="xslqual-UnusedGlobalVariableOrParameter" role="warning"
+      test="not($xslq:check-global-parameters-and-variables) or xslq:var-or-param-is-referenced-within-its-scope(., $xslq:self.resolved/*)"
+      > [xslqual] Global <value-of select="local-name(.)"/> $<value-of select="@name"/> is unused by the file or its inclusions. </assert>
+  </rule>
+  
+  <rule context="*/*/xsl:variable">
     
     <xd:doc>
       <xd:desc xml:lang="en">XSLT doesn't need to be more verbose than it is. Using xsl:value-of has a really special meaning, it make flat string from a tree, which cost a few operations for the processor. Don't use it if you don't need it.</xd:desc>
@@ -86,7 +95,7 @@
     </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Is it really usefull to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
+      <xd:desc xml:lang="en">Is it really useful to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
     <assert id="xslqual-UnusedVariable" role="warning" 
@@ -96,7 +105,7 @@
     
   </rule>
   
-  <rule context="xsl:param">
+  <rule context="*/*/xsl:param">
     
     <xd:doc>
       <xd:desc xml:lang="en">XSLT doesn't need to be more verbose than it is. Using xsl:value-of has a really special meaning, it make flat string from a tree, which cost a few operations for the processor. Don't use it if you don't need it.</xd:desc>
@@ -219,6 +228,8 @@
       <xd:desc xml:lang="en">Avoid using double double slash operator even to request nodes in a subtree structure, it's gready.</xd:desc>
       <xd:desc xml:lang="fr">Même dans une sous-structure il vaut mieux éviter d'utiliser // qui est gourmand et pourrait poser des problème de performance</xd:desc>
     </xd:doc>
+    <!-- JK: the // is fine in a construction such as .//div, which is just descendant::div. It's cases where you want to catch
+    a person doing an XPath expression that jumps out of the current context and starts at the document node, right? -->
     <report id="xslqual-DontUseDoubleSlashOperator"
       test="local-name(.)= ('match', 'select') and (not(matches(., '^''.*''$')))
       and not(starts-with(., '//')) and contains(., '//')" role="info">
@@ -238,14 +249,16 @@
       <xd:desc xml:lang="en">boolean true() or false() is not the same a string 'true' and 'false', you should be carefull about this</xd:desc>
       <xd:desc xml:lang="fr">Les booléens true() et false() ne sont pas la même chose que les string 'true' et 'false', il faut y faire attention</xd:desc>
     </xd:doc>
-    <report id="xslqual-IncorrectUseOfBooleanConstants" role="info"
+    <!-- JK: The following rule returns in my stylesheets many false reports, because there are variables or functions with the
+    words true or false as part of their name. There is probably a more efficient way to handle this, too. -->
+    <!--<report id="xslqual-IncorrectUseOfBooleanConstants" role="info"
       test="local-name(.)= ('match', 'select') and not(parent::xsl:attribute)
       and ((contains(., 'true') and not(contains(., 'true()'))) or (contains(., 'false') and not(contains(., 'false()'))))">
       [xslqual] Incorrectly using the boolean constants as 'true' or 'false'
-    </report>
+    </report>-->
     
     <xd:doc>
-      <xd:desc xml:lang="en">Namespace axes has been deprecated in XSLT 2+, see https://www.w3.org/TR/xslt20/#backwards-compatibility-feature</xd:desc>
+      <xd:desc xml:lang="en">Namespace axes have been deprecated in XSLT 2+, see https://www.w3.org/TR/xslt20/#backwards-compatibility-feature</xd:desc>
       <xd:desc xml:lang="fr">L'axe "namepace" est déprécié en XSLT2+, cf. https://www.w3.org/TR/xslt20/#backwards-compatibility-feature</xd:desc>
     </xd:doc>
     <report id="xslqual-UsingNamespaceAxis" 

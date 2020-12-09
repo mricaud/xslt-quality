@@ -17,7 +17,7 @@
   
   <!--<xd:doc scope="stylesheet">
     <xd:desc>
-      <xd:p>Sample XSLT to test validatation with checkXSLTstyle.sch</xd:p>
+      <xd:p>Sample XSLT to test validatation with xslt-quality.sch</xd:p>
     </xd:desc>
   </xd:doc>-->
   

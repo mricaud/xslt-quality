@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="20.1">
+<project version="22.1">
     <meta>
         <filters directoryPatterns="" filePatterns="xslt-quality.xpr" positiveFilePatterns="" showHiddenFiles="false"/>
         <options>
-            <serialized version="20.1" xml:space="preserve">
+            <serialized version="22.1" xml:space="preserve">
                 <serializableOrderedMap>
                     <entry>
                         <String>enable.project.master.files.support</String>
@@ -24,6 +24,31 @@
                                 <field name="scenarioTypes">
                                     <list>
                                         <String>Validation_scenario</String>
+                                    </list>
+                                </field>
+                                <field name="scenarioStorageLocations">
+                                    <list>
+                                        <Byte>2</Byte>
+                                    </list>
+                                </field>
+                            </scenarioAssociation>
+                            <scenarioAssociation>
+                                <field name="url">
+                                    <String>src/main/xsl/parameters.xsl</String>
+                                </field>
+                                <field name="scenarioIds">
+                                    <list>
+                                        <String>XSLT quality</String>
+                                    </list>
+                                </field>
+                                <field name="scenarioTypes">
+                                    <list>
+                                        <String>Validation_scenario</String>
+                                    </list>
+                                </field>
+                                <field name="scenarioStorageLocations">
+                                    <list>
+                                        <Byte>2</Byte>
                                     </list>
                                 </field>
                             </scenarioAssociation>
@@ -74,7 +99,7 @@
                                                         <Integer>7</Integer>
                                                     </field>
                                                     <field name="uri">
-                                                        <String>${pdu}/src/main/sch/checkXSLTstyle.sch</String>
+                                                        <String>${pdu}/src/main/sch/xslt-quality.sch</String>
                                                     </field>
                                                 </validationUnitSchema>
                                             </field>
@@ -97,6 +122,7 @@
     <projectTree name="xslt-quality.xpr">
         <folder masterFiles="true" name="Master Files">
             <file name="src/main/sch/xslt-quality.sch"/>
+            <file name="src/main/xsl/xslt-quality.xsl"/>
         </folder>
         <folder path="."/>
     </projectTree>

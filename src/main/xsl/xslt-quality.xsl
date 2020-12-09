@@ -4,24 +4,96 @@
   xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xml:lang="en"
   version="3.0">
-  
+
   <xd:doc scope="stylesheet">
     <xd:desc>
       <xd:p>XSLT library used by xslt-quality schematron framework</xd:p>
     </xd:desc>
   </xd:doc>
   
+  <xsl:import href="parameters.xsl"/>
+  
+  <xsl:variable name="xslq:NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
+  <xsl:variable name="xslq:self.resolved" select="xslq:resolve-xslt(/)" as="document-node()"/>
+  <xsl:variable name="xslq:self.indentations" as="element()*">
+    <xsl:apply-templates mode="xslq:gather.indentations"/>
+  </xsl:variable>
+  <xsl:variable name="xslq:self.indentations.typical" as="element()*">
+    <xsl:for-each-group select="$xslq:self.indentations[not(@last = 'true')]" group-by="@depth">
+      <xsl:sort select="number(current-grouping-key())"/>
+      <xsl:for-each-group select="current-group()" group-by="string-length(.)">
+        <xsl:sort select="count(current-group())" order="descending"/>
+        <xsl:copy-of select="current-group()[1]"/>
+      </xsl:for-each-group> 
+    </xsl:for-each-group> 
+  </xsl:variable>
+  <xsl:variable name="xslq:local.xslq.parameters" select="$xslq:self.resolved/*/xslq:parameters" as="element()*"/>
+  <xsl:variable name="xslq:local.xslq.parameters.resolved" as="element()*">
+    <xslq:parameters>
+      <xsl:choose>
+        <xsl:when test="lower-case($xslq:local.xslq.parameters[last()]/@inherit) = ('true', 'yes', '1')">
+          <xsl:for-each-group select="$xslq:self.resolved/descendant-or-self::xslq:parameters/*"
+            group-by="local-name(.)">
+            <xsl:for-each-group select="current-group()" group-by="count(ancestor::*)">
+              <xsl:sort select="current-grouping-key()"/>
+              <xsl:if test="position() eq 1">
+                <xsl:copy-of select="current-group()[last()]"/>
+              </xsl:if>
+            </xsl:for-each-group>
+          </xsl:for-each-group>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:for-each-group select="$xslq:local.xslq.parameters/*" group-by="local-name(.)">
+            <xsl:copy-of select="current-group()[last()]"/>
+          </xsl:for-each-group>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xslq:parameters>
+  </xsl:variable>
+  <xsl:variable name="xslq:xslq.parameters.used" as="xs:string*"
+    select="
+      for $i in $xslq:local.xslq.parameters.resolved/*
+      return
+        local-name($i)"/>
+  <xsl:variable name="xslq:xslq-parameter-file" select="doc('parameters.xsl')" as="document-node()"/>
+  <xsl:variable name="xslq:xslq.parameters.unused" as="element()*"
+    select="$xslq:xslq-parameter-file/*/xsl:param[not(@name = $xslq:xslq.parameters.used)]"/>
+  
+  <xsl:mode name="xslq:gather.indentations" on-no-match="shallow-skip"/>
+  <xsl:template match="text()[not(matches(., '\S'))]" mode="xslq:gather.indentations">
+    <indent depth="{count(ancestor::*)}" last="{not(exists(following-sibling::node()))}">
+      <xsl:value-of select="."/>
+    </indent>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>
+      <xd:p>See 2arity version of this function</xd:p>
+    </xd:desc>
+    <xd:param name="var">See 2arity version of this function</xd:param>
+  </xd:doc>
+   <xsl:function name="xslq:var-or-param-is-referenced-within-its-scope" as="xs:boolean">
+      <xsl:param name="var" as="element()"/>
+    <xsl:sequence
+      select="xslq:var-or-param-is-referenced-within-its-scope($var, $var/ancestor::xsl:*[1])"/>
+   </xsl:function>
+  
   <xd:doc>
     <xd:desc>
       <xd:p>Checks if an xsl:variable or an xsl:param is used within its scope</xd:p>
     </xd:desc>
     <xd:param name="var">xsl:variable or an xsl:param</xd:param>
+    <xd:param name="scope">an element in which to look for use of the parameter or variable</xd:param>
     <xd:return>boolean</xd:return>
   </xd:doc>
    <xsl:function name="xslq:var-or-param-is-referenced-within-its-scope" as="xs:boolean">
       <xsl:param name="var" as="element()"/>
-      <xsl:sequence select="xslq:expand-prefix($var/@name, $var) = 
-         xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix($var/ancestor::xsl:*[1])"/>
+      <xsl:param name="scope" as="element()"/>
+    <xsl:sequence
+      select="
+        xslq:expand-prefix($var/@name, $var) =
+        xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix($scope)"
+    />
    </xsl:function>
    
   <xd:doc>
@@ -47,8 +119,8 @@
    <xsl:function name="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix" as="xs:string*">
       <xsl:param name="scope" as="element()"/>
       <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames--> 
-      <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-      <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
+      <!--<xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>-->
+      <xsl:variable name="QName.reg" select="'(' || $xslq:NCNAME.reg || ':)?' || $xslq:NCNAME.reg" as="xs:string"/>
       <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
          <xsl:variable name="context" select="parent::*" as="element()"/>
          <xsl:analyze-string select="." regex="{'\$(' || $QName.reg || ')'}">
@@ -104,7 +176,7 @@
    
   <xd:doc>
     <xd:desc>
-      <xd:p>Get every attributes which allow xpath value in XSLT</xd:p>
+      <xd:p>Get every XSLT attribute that allows XPath values</xd:p>
     </xd:desc>
     <xd:param name="scope">XSLT fragment where to apply the function</xd:param>
     <xd:return>sequence of xsl attributes with xpath inside</xd:return>
@@ -193,5 +265,263 @@
       <xsl:variable name="ns" select="if ($prefix != '') then (namespace-uri-for-prefix($prefix, $context)) else ('')" as="xs:string"/>
       <xsl:value-of select="'Q{' || $ns, '}' || $local-name" separator=""/>
    </xsl:function>
+  
+  <xd:doc>
+    <xd:desc>Resolves an XSLT file by inserting all its dependencies, recursively. The result is a
+      complete XSLT document whose resolved parts can be checked for lines of dependencies, errors,
+      and so forth.</xd:desc>
+    <xd:param name="input-xslt">An XSLT file</xd:param>
+  </xd:doc>
+  <xsl:function name="xslq:resolve-xslt" as="document-node()">
+    <xsl:param name="input-xslt" as="document-node()?"/>
+    <xsl:document>
+      <xsl:apply-templates select="$input-xslt" mode="xslq:resolve-xslt">
+        <xsl:with-param name="current-base-uri" select="base-uri($input-xslt)" tunnel="yes" as="xs:anyURI"/>
+      </xsl:apply-templates>
+    </xsl:document>
+  </xsl:function>
+  
+  <xsl:mode name="xslq:resolve-xslt" on-no-match="shallow-copy"/>
+  
+  <xsl:template match="xsl:include | xsl:import" mode="xslq:resolve-xslt">
+    <xsl:param name="uris-already-visited" as="xs:anyURI*" tunnel="yes"/>
+    <xsl:param name="current-base-uri" as="xs:anyURI" tunnel="yes" select="base-uri(root(.))"/>
+    
+    <xsl:variable name="this-name" select="name(.)" as="xs:string"/>
+    <xsl:variable name="target-uri" select="resolve-uri(@href, $current-base-uri)" as="xs:anyURI?"/>
+    <xsl:variable name="target-xslt-available" select="doc-available($target-uri)" as="xs:boolean"/>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:choose>
+        <xsl:when test="$target-uri = $uris-already-visited">
+          <xslq:error>
+            <xsl:value-of select="'Circular dependency upon ' || $target-uri"/>
+          </xslq:error>
+        </xsl:when>
+        <xsl:when test="not($target-xslt-available)">
+          <xslq:error>
+            <xsl:value-of select="$this-name || ' at ' || $target-uri || ' is not available.'"/>
+          </xslq:error>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="doc($target-uri)" mode="#current">
+            <xsl:with-param name="uris-already-visited" select="$uris-already-visited, $current-base-uri" tunnel="yes" as="xs:anyURI*"/>
+            <xsl:with-param name="current-base-uri" select="$target-uri" tunnel="yes" as="xs:anyURI"/>
+          </xsl:apply-templates>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xd:doc>
+    <xd:desc>Retrieves all active prefixes used in a given element and its descendants.</xd:desc>
+  </xd:doc>
+  <xsl:function name="xslq:get-namespace-prefixes" as="xs:string*">
+    <xsl:param name="element-to-check" as="element()?"/>
+    <xsl:variable name="all-prefixes" as="xs:string*">
+      <xsl:apply-templates select="$element-to-check" mode="xslq:get-namespace-prefixes"/>
+    </xsl:variable>
+    <xsl:sequence select="distinct-values($all-prefixes)"/>
+  </xsl:function>
+  
+  <xsl:template match="* | @*" mode="xslq:get-namespace-prefixes">
+    <xsl:analyze-string select="name(.)" regex="^({$xslq:NCNAME.reg}):">
+      <xsl:matching-substring>
+        <xsl:value-of select="regex-group(1)"/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+    <xsl:apply-templates select="node() | @*" mode="#current"/>
+  </xsl:template>
+  <xsl:template match="xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode" mode="xslq:get-namespace-prefixes">
+    <xsl:analyze-string select="." regex="^({$xslq:NCNAME.reg}):">
+      <xsl:matching-substring>
+        <xsl:value-of select="regex-group(1)"/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+  </xsl:template>
+  <xsl:template match="text()" mode="xslq:get-namespace-prefixes"/>
+  
+  <xd:doc>
+    <xd:desc>See full xslq:plural-form(), 3-arity version</xd:desc>
+    <xd:param name="count">See full xslq:plural-form(), 3-arity version</xd:param>
+    <xd:param name="form-if-plural">See full xslq:plural-form(), 3-arity version</xd:param>
+  </xd:doc>
+  <xsl:function name="xslq:plural-form" as="xs:string?">
+    <xsl:param name="count" as="xs:integer"/>
+    <xsl:param name="form-if-plural" as="xs:string?"/>
+    <xsl:if test="$count gt 1">
+      <xsl:sequence select="xslq:plural-form($count, $form-if-plural, ())"/>
+    </xsl:if>
+  </xsl:function>
+
+  <xd:doc>
+    <xd:desc>Returns a possible plural form, if the count is greater than one.</xd:desc>
+    <xd:param name="count">The number of items in question.</xd:param>
+    <xd:param name="form-if-plural">The form of the suffix that should be returned.</xd:param>
+    <xd:param name="form-if-singular">The form of the suffix that should be returned.</xd:param>
+  </xd:doc>
+  <xsl:function name="xslq:plural-form" as="xs:string?">
+    <xsl:param name="count" as="xs:integer"/>
+    <xsl:param name="form-if-plural" as="xs:string?"/>
+    <xsl:param name="form-if-singular" as="xs:string?"/>
+    <xsl:choose>
+      <xsl:when test="$count gt 1">
+        <xsl:sequence select="$form-if-plural"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="$form-if-singular"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+  
+  
+  <xd:doc>
+    <xd:desc>Indicates whether something is castable into a particular data type. Based on a
+      function with a similar name from the Text Alignment Network, tan:data-type-check().</xd:desc>
+    <xd:param name="item">An item to be checked.</xd:param>
+    <xd:param name="data-type">A string representing the local name of the data type to be
+      checked.</xd:param>
+    <xd:return>True if the data type is recognized and the item is castable into it, false
+      otherwise.</xd:return>
+  </xd:doc>
+  <xsl:function name="xslq:data-type-check" as="xs:boolean">
+    <xsl:param name="item" as="item()?"/>
+    <xsl:param name="data-type" as="xs:string"/>
+    <xsl:variable name="data-type-adjusted" as="xs:string" select="replace($data-type, '^\w+:', '')"/>
+    <xsl:choose>
+      <xsl:when test="$data-type-adjusted = 'string'">
+        <xsl:sequence select="$item castable as xs:string"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'boolean'">
+        <xsl:sequence select="$item castable as xs:boolean"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'decimal'">
+        <xsl:sequence select="$item castable as xs:decimal"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'float'">
+        <xsl:sequence select="$item castable as xs:float"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'double'">
+        <xsl:sequence select="$item castable as xs:double"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'duration'">
+        <xsl:sequence select="$item castable as xs:duration"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'dateTime'">
+        <xsl:sequence select="$item castable as xs:dateTime"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'time'">
+        <xsl:sequence select="$item castable as xs:time"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'date'">
+        <xsl:sequence select="$item castable as xs:date"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'gYearMonth'">
+        <xsl:sequence select="$item castable as xs:gYearMonth"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'gYear'">
+        <xsl:sequence select="$item castable as xs:gYear"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'gMonthDay'">
+        <xsl:sequence select="$item castable as xs:gMonthDay"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'gDay'">
+        <xsl:sequence select="$item castable as xs:gDay"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'gMonth'">
+        <xsl:sequence select="$item castable as xs:gMonth"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'hexBinary'">
+        <xsl:sequence select="$item castable as xs:hexBinary"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'base64Binary'">
+        <xsl:sequence select="$item castable as xs:base64Binary"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'anyURI'">
+        <xsl:sequence select="$item castable as xs:anyURI"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'QName'">
+        <xsl:sequence select="$item castable as xs:QName"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'normalizedString'">
+        <xsl:sequence select="$item castable as xs:normalizedString"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'token'">
+        <xsl:sequence select="$item castable as xs:token"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'language'">
+        <xsl:sequence select="$item castable as xs:language"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'NMTOKEN'">
+        <xsl:sequence select="$item castable as xs:NMTOKEN"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'NMTOKENS'">
+        <xsl:sequence select="$item castable as xs:NMTOKENS"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'Name'">
+        <xsl:sequence select="$item castable as xs:Name"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'NCName'">
+        <xsl:sequence select="$item castable as xs:NCName"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'ID'">
+        <xsl:sequence select="$item castable as xs:ID"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'IDREF'">
+        <xsl:sequence select="$item castable as xs:IDREF"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'IDREFS'">
+        <xsl:sequence select="$item castable as xs:IDREFS"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'ENTITY'">
+        <xsl:sequence select="$item castable as xs:ENTITY"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'ENTITIES'">
+        <xsl:sequence select="$item castable as xs:ENTITIES"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'integer'">
+        <xsl:sequence select="$item castable as xs:integer"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'nonPositiveInteger'">
+        <xsl:sequence select="$item castable as xs:nonPositiveInteger"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'negativeInteger'">
+        <xsl:sequence select="$item castable as xs:negativeInteger"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'long'">
+        <xsl:sequence select="$item castable as xs:long"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'int'">
+        <xsl:sequence select="$item castable as xs:int"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'short'">
+        <xsl:sequence select="$item castable as xs:short"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'byte'">
+        <xsl:sequence select="$item castable as xs:byte"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'nonNegativeInteger'">
+        <xsl:sequence select="$item castable as xs:nonNegativeInteger"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'unsignedLong'">
+        <xsl:sequence select="$item castable as xs:unsignedLong"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'unsignedInt'">
+        <xsl:sequence select="$item castable as xs:unsignedInt"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'unsignedShort'">
+        <xsl:sequence select="$item castable as xs:unsignedShort"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'unsignedByte'">
+        <xsl:sequence select="$item castable as xs:unsignedByte"/>
+      </xsl:when>
+      <xsl:when test="$data-type-adjusted = 'positiveInteger'">
+        <xsl:sequence select="$item castable as xs:positiveInteger"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="false()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
    
 </xsl:stylesheet>

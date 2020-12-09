@@ -9,7 +9,7 @@
   
   <xd:doc>
     <xd:desc>
-      <xd:p>These rules are about namespaces usage in XSLT</xd:p>
+      <xd:p>These rules are about namespace usage in XSLT</xd:p>
     </xd:desc>
   </xd:doc>
   
@@ -18,7 +18,7 @@
       <xd:desc xml:lang="en">Adding a namespace prefix at your global variables and parameters will make your XSLT more portable: it will avoid name conflict with other XSLT importing yours and vice versa.</xd:desc>
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos variables et paramètres globaux rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
-    <assert test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
+    <assert test="$xslq:allow-no-namespace or (every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':')))" role="warning" id="xslt-quality_ns-global-statements-need-prefix">
       [namespaces] <value-of select="local-name(parent::*)"/> <name/>="<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>
@@ -28,7 +28,7 @@
       <xd:desc xml:lang="en">Adding a namespace prefix at your template's mode will make your XSLT more portable: it will avoid name conflict with other XSLT importing yours and vice versa.</xd:desc>
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos mode de template rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
-    <assert test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))" role="warning" id="xslt-quality_ns-mode-statements-need-prefix">
+    <assert test="$xslq:allow-no-namespace or (every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':')))" role="warning" id="xslt-quality_ns-mode-statements-need-prefix">
       [namespaces] <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>

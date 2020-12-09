@@ -23,6 +23,25 @@ A subset of this code is a revision of code written by [Mukul Gandhi in his XSL 
 
 All other code is released under Apache License Version 2.0
 
+## Customization
+
+Not every XSLT programmer has the same needs or styles. You can calibrate the types of tests that are run by adding `{https://github.com/mricaud/xsl-quality}parameters` as a 2nd-level element in your stylesheet, with children specifying which parameters to use. An example:
+```
+<xslq:parameters>
+      <xslq:granular-template-threshold>5</xslq:granular-template-threshold>      
+      <xslq:use-oxygen-documentation>false</xslq:use-oxygen-documentation>
+      <xslq:check-global-parameters-and-variables>false</xslq:check-global-parameters-and-variables>
+      <xslq:allow-no-namespace>true</xslq:allow-no-namespace>
+</xslq:parameters>
+```
+
+You may place that element anywhere in the stylesheet you want, at the beginning, the end, or the middle, but it must be a child of the root element `xsl:transform` or `xsl:stylesheet`.
+
+If you want to see what parameters you can adjust, either consult the file [parameters.xsl](src/main/xsl/parameters.xsl) or add an element `help` or `xslq:help` to `xslq:parameters`. If you are working within Oxygen, you will see a red light bulb to the left of the error message, populated with quick fixes, to add a parameter, with its default value.
+
+Parameters are inheritable from any inclusions or imports, so you can specify your settings in a core XSLT file. Those inherited settings can be overwritten in a local XSLT file. In case multiple parameter settings are present, priority will be assigned to local settings before inherited, and then to the last parameter setting. That is, if a stylesheet inherits XSLQ settings from imported stylesheets A and B (with A imported before B), then B's settings will overrule any settings in A.  
+
+
 ## Technical notes
 
 ### Modularization 
