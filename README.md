@@ -41,7 +41,6 @@ XSLT Quality is using Schematron applied on any XSLT and generates errors, warni
 The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
 The Schematron engine you are using must support this extension, typically by setting `allow-foreign` parameter to true.
 
-
 ## Using XSLT Quality with Oxygen
 
 First make sure "*Allow foreign elements (allow-foreign)*" is activated here:
@@ -69,6 +68,76 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. Click OK (Three times)
 
 In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT.
+
+## Configure xslt-quality
+
+Not every XSLT programmer or organization has the same needs or styles. If you need more business specific rules, you can add your own schematron with Oxygen XSLT validation scenario. And if you find some common rules are missing in  xslt-quality, please open an issue here.
+
+Xslt-quality is also highly configurable, you can easily control and calibrate xslt-quality thanks to an XML configuration.
+
+### xslt-quality default conf file 
+
+Xslt-quality is using its default configuration file at [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml), there are multiple manner to override this file, see next sections.
+
+Let's see how this conf file works: it represents a hierarchic view of the architecture of [xslt-quality.sch](src/main/sch/xslt-quality.sch) with its modules (pattern), rules, assertions and reports, with and `@idref` attribute  (pointing to the corresponding schematron element). An extra `@activate` attribute allows to desactivate any of these elements. This mean desactivating the whole sub-elements.
+That's why it's important that elements are nested to exactly reflect the real schematron hierarchy.
+
+> Note : this file might generated automatically
+
+Some parameters value might also be defined to refine some rules behaviour.
+
+Extract from this conf:
+
+```
+<conf xmlns="https://github.com/mricaud/xsl-quality"
+  ignore-roles="info">
+  <module idref="xslt-quality_writing" active="true"/>
+  <module idref="xslt-quality_namespaces" active="false"/>
+  <module idref="xslt-quality_mukulgandhi-rules" active="true">
+    <rule idref="xslqual-attributes">
+      <report idref="xslqual-UsingNameOrLocalNameFunction"/>
+      <report idref="xslqual-IncorrectUseOfBooleanConstants"/>
+    </rule>
+    <rule idref="xslqual-functions">
+      <assert idref="xslqual-UnusedFunction" active="false"/>
+      <assert idref="xslqual-UnusedParameter"/>
+      <report idref="xslqual-FunctionComplexity">
+        <param name="maxSize" as="xs:integer">50</param>
+      </report>
+    </rule>
+  </module>
+</conf>
+```
+
+### Override the default full conf
+
+Oxygen doesn't allow to send parameters to schematron, but if your schematron processor allows it, you can override the parameter `$xslq:conf.uri` to use another file. Be careful, this file has to be full (declare every xslt-quality components: asssert/report at least).
+
+### Overide conf at stylesheet level
+
+adding `{https://github.com/mricaud/xsl-quality}conf` as a 2nd-level element in the stylesheet to be tested, with children referencing any module/pattern/rule/assert/report by `idref` to activate it or not. An example:
+
+```
+<conf xmlns="https://github.com/mricaud/xsl-quality" ignore-roles="info warning">
+  <assert idref="xslqual-UnusedFunction" active="true"/>
+  <assert idref="xslqual-UnusedParameter" active="false"/>
+  <report idref="xslqual-FunctionComplexity">
+    <param name="maxSize">5</param>
+  </report>
+</conf>
+```
+
+This conf doesn't need to be full neither nested a the default conf. It's a local conf aiming at overriding the full conf file at [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml). You can desactivate any rules here, or change the value of a param.
+
+> Note : the hierarchy impact the full conf : if you desactivate one level, every subcomponent will be desactivated as well.
+
+As you can see in the exemple you can also override parameters value used in some component (see [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml) to get them all)
+
+You may place that element anywhere in the stylesheet being tested, at the beginning, the end, or the middle, but it must be a child of the root element `xsl:transform` or `xsl:stylesheet`.
+
+### Override conf at stylesheet component level
+
+You can add an attribute `xslq:ignore` on any element of your stylesheet. The value is a list of assert/="xslqual-FunctionComplexity"
 
 ## MAVEN
 

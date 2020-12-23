@@ -112,8 +112,11 @@
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
     <assert id="xslqual-UnusedParameter" role="warning"
-      test="xslq:var-or-param-is-referenced-within-its-scope(.)">
+      test="if(not(xslq:is-active(., 'xslqual-UnusedParameter'))) then (true()) else(
+      xslq:var-or-param-is-referenced-within-its-scope(.)
+      )">
       [xslqual] Parameter $<value-of select="@name"/> is unused within its scope
+      test : <value-of select="serialize($xslq:conf-merged)"/>
     </assert>
     
   </rule>
@@ -129,7 +132,7 @@
     </report>
   </rule>
   
-  <rule context="xsl:function[(:ignore function library stylesheet:)
+  <rule id="xslqual-functions" context="xsl:function[(:ignore function library stylesheet:)
     count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]">
     
     <xd:doc>
@@ -137,25 +140,26 @@
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer une fonction sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <assert id="xslqual-UnusedFunction" role="warning"
-      test="xslq:function-is-called-within-its-scope(.)">
+      test="if(not(xslq:is-active(., 'xslqual-UnusedFunction'))) then (true()) else(
+      xslq:function-is-called-within-its-scope(.)
+      )">
       [xslqual] Function <value-of select="@name"/> is unused in the stylesheet
     </assert>
-    
-    <!--<report id="xslqual-UnusedFunction" role="warning"
-      test="not(some $x in //(xsl:template/@match | xsl:*/@select | xsl:when/@test) satisfies contains($x, @name)) 
-      and not(some $x in //(*[not(self::xsl:*)]/@*) satisfies contains($x, concat('{', @name, '(')))">
-      [xslqual] Function is unused in the stylesheet
-    </report>-->
     
     <xd:doc>
       <xd:desc xml:lang="en">When a function is too big maybe it's good to wonder if one could split it</xd:desc>
       <xd:desc xml:lang="fr">Quand une fonction est trop longue, peut-être que l'on peut s'interroger sur un autre découpage</xd:desc>
     </xd:doc>
     <report id="xslqual-FunctionComplexity" role="info"
-      test="count(.//xsl:*) &gt; 50">
+      test="if(not(xslq:is-active(., 'xslqual-FunctionComplexity'))) then (false()) else(
+      count(.//xsl:*) gt xslq:get-param-value('xslqual-FunctionComplexity', 'maxSize', 'xs:integer')
+      )">
       [xslqual] Function's size/complexity is high. There is need for refactoring the code.
     </report>
     
+    <report test="false()">
+      test : 
+    </report>
   </rule>
   
   <rule context="xsl:template">
@@ -203,7 +207,7 @@
     </report>
   </rule>
   
-  <rule context="@*">
+  <rule id="xslqual-attributes" context="@*">
     
     <xd:doc>
       <xd:desc xml:lang="en">Double slash operator is really gready : it means "look every node in the source document". If you're using // while processing every one node than you will process each node N*N times! You will face performance problem while processing big documents! Tip: use a xsl:key instead</xd:desc>
@@ -229,8 +233,10 @@
       <xd:desc xml:lang="en">name() is for getting qualified name of a node, local-name() is the local part of the qualified name. It's not the same and sometimes you should be carefull about this</xd:desc>
       <xd:desc xml:lang="fr">name() indique le nom qualifié d'un noeud, local-name() correspond à la partie locale du nom qualifié. Ce n'est pas la même chose, et parfois il faut y faire attention</xd:desc>
     </xd:doc>
-    <report id="xslqual-UsingNameOrLocalNameFunction" 
-      test="contains(., 'name(') or contains(., 'local-name(')" role="info">
+    <report id="xslqual-UsingNameOrLocalNameFunction" role="info"
+      test="if(not(xslq:is-active(., 'xslqual-UsingNameOrLocalNameFunction'))) then (false()) else(
+      contains(., 'name(') or contains(., 'local-name(')
+      )">
       [xslqual] Using name() function when local-name() could be appropriate (and vice-versa)
     </report>
     
@@ -239,8 +245,10 @@
       <xd:desc xml:lang="fr">Les booléens true() et false() ne sont pas la même chose que les string 'true' et 'false', il faut y faire attention</xd:desc>
     </xd:doc>
     <report id="xslqual-IncorrectUseOfBooleanConstants" role="info"
-      test="local-name(.)= ('match', 'select') and not(parent::xsl:attribute)
-      and ((contains(., 'true') and not(contains(., 'true()'))) or (contains(., 'false') and not(contains(., 'false()'))))">
+      test="if(not(xslq:is-active(., 'xslqual-IncorrectUseOfBooleanConstants'))) then (false()) else(
+      local-name(.)= ('match', 'select') and not(parent::xsl:attribute)
+      and ((contains(., 'true') and not(contains(., 'true()'))) or (contains(., 'false') and not(contains(., 'false()'))))
+      )">
       [xslqual] Incorrectly using the boolean constants as 'true' or 'false'
     </report>
     

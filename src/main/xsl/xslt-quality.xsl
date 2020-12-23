@@ -11,6 +11,8 @@
     </xd:desc>
   </xd:doc>
   
+  <xsl:import href="xslt-quality-conf.xsl"/>
+  
   <xd:doc>
     <xd:desc>
       <xd:p>Checks if an xsl:variable or an xsl:param is used within its scope</xd:p>
