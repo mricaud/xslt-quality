@@ -48,4 +48,6 @@
   <include href="modules/xslt-quality_writing.sch"/>
   <include href="modules/xslt-quality_xslt-3.0.sch"/>
   
+  <!--A debugger (allow to see current xsltq conf for instance)-->
+  <include href="modules/xslt-quality_debug.sch"/>
 </schema>
