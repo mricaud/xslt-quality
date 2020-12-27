@@ -170,7 +170,7 @@
     </xd:doc>
     <report id="xslqual-FunctionComplexity" role="info"
       test="if(not(xslq:is-active(., 'xslqual-FunctionComplexity'))) then (false()) else(
-      count(.//xsl:*) gt xslq:get-param-value('xslqual-FunctionComplexity', 'maxSize', 'xs:integer')
+      count(.//xsl:*) gt xslq:get-param-value('xslqual-FunctionComplexity', 'maxSize', '50', 'xs:integer')
       )">
       [xslqual-FunctionComplexity] Function's size/complexity is high. There is need for refactoring the code.
     </report>
