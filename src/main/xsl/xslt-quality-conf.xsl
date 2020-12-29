@@ -54,9 +54,9 @@
     </xsl:document>
   </xsl:function>
   
-  <xsl:function name="xslq:get-conf-element" as="element()*">
+  <xsl:function name="xslq:get-conf-element" as="element()?">
     <xsl:param name="sch-idref" as="xs:string"/>
-    <xsl:sequence select="key('getConfElementByIdref', $sch-idref, $xslq:conf-merged)"/>
+    <xsl:sequence select="key('getConfElementByIdref', $sch-idref, $xslq:conf-merged)[last()]"/>
   </xsl:function>
   
   <xsl:function name="xslq:get-conf-param" as="element()*">
@@ -69,7 +69,7 @@
     <xsl:param name="sch-idref" as="xs:string"/>
     <!--a node that has no ancestor-or-self is the root node-->
     <xsl:variable name="element" select="($node/ancestor-or-self::*[1], $node/*[1])[1]" as="element()"/>
-    <xsl:variable name="conf-element" as="element()?" select="xslq:get-conf-element($sch-idref)[last()]"/>
+    <xsl:variable name="conf-element" as="element()?" select="xslq:get-conf-element($sch-idref)"/>
     <xsl:choose>
       <xsl:when test="$element/@xslq:ignore => tokenize('\s+') = $sch-idref">
         <xsl:sequence select="false()"/>

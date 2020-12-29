@@ -93,6 +93,16 @@
   <xsl:template match="(sch:pattern | sch:rule | sch:assert | sch:report)[@id]" mode="xslq:generate-default-conf">
     <xsl:element name="{local-name()}">
       <xsl:attribute name="idref" select="@id"/>
+      <xsl:attribute name="active">
+        <xsl:choose>
+          <xsl:when test="@id = 'xslt-quality_debug'">
+            <xsl:text>false</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>true</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
       <xsl:apply-templates mode="#current"/>
     </xsl:element>
   </xsl:template>

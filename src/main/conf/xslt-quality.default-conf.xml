@@ -5,81 +5,82 @@
       xmlns:xslq="https://github.com/mricaud/xsl-quality"
       xmlns="https://github.com/mricaud/xsl-quality">
    <param name="xslqual-FunctionComplexity-maxSize">50</param>
-   <pattern idref="xslqual_mukulgandhi">
-      <rule idref="xslqual_stylesheet">
-         <assert idref="xslqual-RedundantNamespaceDeclarations"/>
-         <report idref="xslqual-TooManySmallTemplates"/>
-         <report idref="xslqual-MonolithicDesign"/>
-         <report idref="xslqual-NotUsingSchemaTypes"/>
+   <pattern idref="xslqual_mukulgandhi" active="true">
+      <rule idref="xslqual_stylesheet" active="true">
+         <assert idref="xslqual-RedundantNamespaceDeclarations" active="true"/>
+         <report idref="xslqual-TooManySmallTemplates" active="true"/>
+         <report idref="xslqual-MonolithicDesign" active="true"/>
+         <report idref="xslqual-NotUsingSchemaTypes" active="true"/>
       </rule>
-      <rule idref="xslqual_output">
-         <report idref="xslqual-OutputMethodXml"/>
+      <rule idref="xslqual_output" active="true">
+         <report idref="xslqual-OutputMethodXml" active="true"/>
       </rule>
-      <rule idref="xslqual_variable">
-         <report idref="xslqual-SettingValueOfVariableIncorrectly"/>
-         <assert idref="xslqual-UnusedVariable"/>
+      <rule idref="xslqual_variable" active="true">
+         <report idref="xslqual-SettingValueOfVariableIncorrectly" active="true"/>
+         <assert idref="xslqual-UnusedVariable" active="true"/>
       </rule>
-      <rule idref="xslqual_param">
-         <report idref="xslqual-SettingValueOfParamIncorrectly"/>
-         <assert idref="xslqual-UnusedParameter"/>
+      <rule idref="xslqual_param" active="true">
+         <report idref="xslqual-SettingValueOfParamIncorrectly" active="true"/>
+         <assert idref="xslqual-UnusedParameter" active="true"/>
       </rule>
-      <rule idref="xslqual_instructions">
-         <report idref="xslqual-EmptyContentInInstructions"/>
+      <rule idref="xslqual_instructions" active="true">
+         <report idref="xslqual-EmptyContentInInstructions" active="true"/>
       </rule>
-      <rule idref="xslqual-functions">
-         <assert idref="xslqual-UnusedFunction"/>
-         <report idref="xslqual-FunctionComplexity"/>
+      <rule idref="xslqual-functions" active="true">
+         <assert idref="xslqual-UnusedFunction" active="true"/>
+         <report idref="xslqual-FunctionComplexity" active="true"/>
       </rule>
-      <rule idref="xslqual-template">
-         <report idref="xslqual-UnusedNamedTemplate"/>
-         <report idref="xslqual-TemplateComplexity"/>
+      <rule idref="xslqual-template" active="true">
+         <report idref="xslqual-UnusedNamedTemplate" active="true"/>
+         <report idref="xslqual-TemplateComplexity" active="true"/>
       </rule>
-      <rule idref="xslqual-element">
-         <report idref="xslqual-NotCreatingElementCorrectly"/>
+      <rule idref="xslqual-element" active="true">
+         <report idref="xslqual-NotCreatingElementCorrectly" active="true"/>
       </rule>
-      <rule idref="xslqual-apply-templates">
-         <report idref="xslqual-ConfusingVariableAndNode"/>
+      <rule idref="xslqual-apply-templates" active="true">
+         <report idref="xslqual-ConfusingVariableAndNode" active="true"/>
       </rule>
-      <rule idref="xslqual-attributes">
-         <report idref="xslqual-DontUseDoubleSlashOperatorNearRoot"/>
-         <report idref="xslqual-DontUseDoubleSlashOperator"/>
-         <report idref="xslqual-UsingNameOrLocalNameFunction"/>
-         <report idref="xslqual-IncorrectUseOfBooleanConstants"/>
-         <report idref="xslqual-UsingNamespaceAxis"/>
-         <report idref="xslqual-CanUseAbbreviatedAxisSpecifier"/>
-         <report idref="xslqual-UsingDisableOutputEscaping"/>
-      </rule>
-   </pattern>
-   <pattern idref="xslt-quality_common">
-      <report idref="xslt-quality_avoid-for-each"/>
-      <report idref="xslt-quality_use-resolve-uri-instead-of-concat"/>
-   </pattern>
-   <pattern idref="xslt-quality_documentation">
-      <rule idref="xslt-quality_documentation-stylesheet">
-         <assert idref="xslt-quality_documentation-stylesheet-docblock"/>
+      <rule idref="xslqual-attributes" active="true">
+         <report idref="xslqual-DontUseDoubleSlashOperatorNearRoot" active="true"/>
+         <report idref="xslqual-DontUseDoubleSlashOperator" active="true"/>
+         <report idref="xslqual-UsingNameOrLocalNameFunction" active="true"/>
+         <report idref="xslqual-IncorrectUseOfBooleanConstants" active="true"/>
+         <report idref="xslqual-UsingNamespaceAxis" active="true"/>
+         <report idref="xslqual-CanUseAbbreviatedAxisSpecifier" active="true"/>
+         <report idref="xslqual-UsingDisableOutputEscaping" active="true"/>
       </rule>
    </pattern>
-   <pattern idref="xslt-quality_namespaces">
-      <rule idref="xslt-quality_namespaces_name">
-         <assert idref="xslt-quality_ns-global-statements-need-prefix"/>
-      </rule>
-      <rule idref="xslt-quality_namespaces_mode">
-         <assert idref="xslt-quality_ns-mode-statements-need-prefix"/>
-      </rule>
-      <rule idref="xslt-quality_namespaces_xpath">
-         <report idref="xslt-quality_ns-do-not-use-wildcard-prefix"/>
+   <pattern idref="xslt-quality_common" active="true">
+      <report idref="xslt-quality_avoid-for-each" active="true"/>
+      <report idref="xslt-quality_use-resolve-uri-instead-of-concat" active="true"/>
+   </pattern>
+   <pattern idref="xslt-quality_documentation" active="true">
+      <rule idref="xslt-quality_documentation-stylesheet" active="true">
+         <assert idref="xslt-quality_documentation-stylesheet-docblock" active="true"/>
       </rule>
    </pattern>
-   <pattern idref="xslt-quality_typing">
-      <report idref="xslt-quality_typing-with-as-attribute"/>
+   <pattern idref="xslt-quality_namespaces" active="true">
+      <rule idref="xslt-quality_namespaces_name" active="true">
+         <assert idref="xslt-quality_ns-global-statements-need-prefix" active="true"/>
+      </rule>
+      <rule idref="xslt-quality_namespaces_mode" active="true">
+         <assert idref="xslt-quality_ns-mode-statements-need-prefix" active="true"/>
+      </rule>
+      <rule idref="xslt-quality_namespaces_xpath" active="true">
+         <report idref="xslt-quality_ns-do-not-use-wildcard-prefix" active="true"/>
+      </rule>
    </pattern>
-   <pattern idref="xslt-quality_writing">
-      <report idref="xslt-quality_writing-use-select-attribute-when-possible"/>
+   <pattern idref="xslt-quality_typing" active="true">
+      <report idref="xslt-quality_typing-with-as-attribute" active="true"/>
    </pattern>
-   <pattern idref="xslt-quality_xslt-3.0">
-      <report idref="xslt-quality_xslt-3.0-import-first"/>
+   <pattern idref="xslt-quality_writing" active="true">
+      <report idref="xslt-quality_writing-use-select-attribute-when-possible"
+              active="true"/>
    </pattern>
-   <pattern idref="xslt-quality_debug">
-      <rule idref="xslt-quality_debug-root"/>
+   <pattern idref="xslt-quality_xslt-3.0" active="true">
+      <report idref="xslt-quality_xslt-3.0-import-first" active="true"/>
+   </pattern>
+   <pattern idref="xslt-quality_debug" active="false">
+      <rule idref="xslt-quality_debug-root" active="true"/>
    </pattern>
 </conf>
