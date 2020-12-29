@@ -2,7 +2,12 @@
 <conf xmlns="https://github.com/mricaud/xsl-quality"
   ignore-roles="info">
   <pattern idref="xslt-quality_writing" active="true"/>
-  <pattern idref="xslt-quality_namespaces" active="false"/>
+  <pattern idref="xslt-quality_namespaces" active="true"/>
+  <pattern idref="xslt-quality_documentation">
+    <rule idref="xslt-quality_documentation-stylesheet">
+      <assert idref="xslt-quality_documentation-stylesheet-docblock"/>
+    </rule>
+  </pattern>
   <pattern idref="xslqual_mukulgandhi" active="true">
     <rule idref="xslqual_stylesheet">
       <assert idref="xslqual-RedundantNamespaceDeclarations"/>
@@ -14,9 +19,7 @@
     <rule idref="xslqual-functions">
       <assert idref="xslqual-UnusedFunction" active="true"/>
       <assert idref="xslqual-UnusedParameter"/>
-      <report idref="xslqual-FunctionComplexity">
-        <param name="maxSize" as="xs:integer">50</param>
-      </report>
+      <report idref="xslqual-FunctionComplexity"/>
     </rule>
   </pattern>
   <alias idref="check-namespace">

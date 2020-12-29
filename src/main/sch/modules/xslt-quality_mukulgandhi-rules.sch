@@ -168,11 +168,12 @@
       <xd:desc xml:lang="en">When a function is too big maybe it's good to wonder if one could split it</xd:desc>
       <xd:desc xml:lang="fr">Quand une fonction est trop longue, peut-être que l'on peut s'interroger sur un autre découpage</xd:desc>
     </xd:doc>
+    <let name="maxSize" value="xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')"/>
     <report id="xslqual-FunctionComplexity" role="info"
       test="if(not(xslq:is-active(., 'xslqual-FunctionComplexity'))) then (false()) else(
-      count(.//xsl:*) gt xslq:get-param-value('xslqual-FunctionComplexity', 'maxSize', '50', 'xs:integer')
+      count(.//xsl:*) gt $maxSize
       )">
-      [xslqual-FunctionComplexity] Function's size/complexity is high. There is need for refactoring the code.
+      [xslqual-FunctionComplexity] Function's size/complexity is high (<value-of select="$maxSize"/> elements). There is need for refactoring the code.
     </report>
   </rule>
   

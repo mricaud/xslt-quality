@@ -11,9 +11,19 @@
     <xd:desc>Utility XSLT to generate the full default conf from xsl-quality.sch</xd:desc>
   </xd:doc>
   
+  <xsl:output indent="true"/>
+  
+  <!--================================================-->
+  <!--INIT-->
+  <!--================================================-->
+  
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="xslq:generate-default-conf.main"/>
   </xsl:template>
+  
+  <!--================================================-->
+  <!--MAIN-->
+  <!--================================================-->
   
   <xsl:template match="/" mode="xslq:generate-default-conf.main">
     <xsl:variable name="step" select="." as="document-node()"/>
@@ -68,13 +78,14 @@
   </xsl:template>
   
   <!--================================================-->
-  <!--Mode xslq:resolve-sch-dependencies-->
+  <!--Mode xslq:generate-default-conf-->
   <!--================================================-->
   
   <xsl:mode name="xslq:generate-default-conf" on-no-match="shallow-skip"/>
   
   <xsl:template match="/sch:schema" mode="xslq:generate-default-conf" priority="1">
     <conf>
+      <xsl:apply-templates select="descendant::sch:*/@*" mode="xslq:generate-default-conf-parameters"/>
       <xsl:apply-templates mode="#current"/>
     </conf>
   </xsl:template>
@@ -82,27 +93,37 @@
   <xsl:template match="(sch:pattern | sch:rule | sch:assert | sch:report)[@id]" mode="xslq:generate-default-conf">
     <xsl:element name="{local-name()}">
       <xsl:attribute name="idref" select="@id"/>
-      <!--xslq:get-param-value('xslqual-FunctionComplexity', 'maxSize', 'xs:integer')-->
-      <xsl:if test="contains(@test, 'xslq:get-param-value')">
-        <xsl:variable name="parameters" as="element(xslq:parameters)">
-          <parameters>
-            <xsl:analyze-string select="@test" regex="xslq:get-param-value\('(.*?)'\s*,\s*'(.*?)',\s*'(.*?)'(\s*,\s*'(.*?)')?\)" flags="m">
-              <xsl:matching-substring>
-                <param component-id="{regex-group(1)}" name="{regex-group(2)}" as="{regex-group(5)}">
-                  <xsl:value-of select="regex-group(3)"/>
-                </param>
-              </xsl:matching-substring>
-            </xsl:analyze-string>
-          </parameters>
-        </xsl:variable>
-        <xsl:for-each select="$parameters/xslq:param">
-          <xsl:if test="not(@name = preceding-sibling::xslq:param/@name)">
-            <param name="{@name}"><xsl:value-of select="."/></param>
-          </xsl:if>
-        </xsl:for-each>
-      </xsl:if>
       <xsl:apply-templates mode="#current"/>
     </xsl:element>
+  </xsl:template>
+  
+  <!--================================================-->
+  <!--Mode xslq:generate-default-conf-parameters-->
+  <!--================================================-->
+  
+  <!--This mode is only called selecting @*, no need to match other nodes-->
+  
+  <xsl:template match="@*" mode="xslq:generate-default-conf-parameters">
+    <xsl:if test="contains(., 'xslq:get-param-value')">
+      <!--example: xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')-->
+      <xsl:variable name="parameters" as="element(xslq:parameters)">
+        <parameters>
+          <xsl:analyze-string select="." regex="xslq:get-param-value\(\s*'(.*?)',\s*'(.*?)'(\s*,\s*'(.*?)')?\)" flags="m">
+            <xsl:matching-substring>
+              <param name="{regex-group(1)}" as="{regex-group(4)}">
+                <xsl:value-of select="regex-group(2)"/>
+              </param>
+            </xsl:matching-substring>
+          </xsl:analyze-string>
+        </parameters>
+      </xsl:variable>
+      <!--In case the call to xslq:get-param-value appears several times in the same xpath expression-->
+      <xsl:for-each select="$parameters/xslq:param">
+        <xsl:if test="not(@name = preceding-sibling::xslq:param/@name)">
+          <param name="{@name}"><xsl:value-of select="."/></param>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
   
 </xsl:stylesheet>

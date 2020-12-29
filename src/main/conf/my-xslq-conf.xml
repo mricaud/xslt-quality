@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<conf xmlns="https://github.com/mricaud/xsl-quality" ignore-roles="info warning">
+<conf xmlns="https://github.com/mricaud/xsl-quality">
   <pattern idref="xslt-quality_documentation" active="false"/>
+  <report idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
   <include href="mricaud/conf-aliases.xml"/>
+  <alias idref="check-namespace" active="false"/>
 </conf>

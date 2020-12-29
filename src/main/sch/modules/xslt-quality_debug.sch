@@ -13,7 +13,7 @@
     </xd:desc>
   </xd:doc>
   
-  <rule context="/*"
+  <rule context="/"
     id="xslt-quality_debug-root">
     <xd:doc>
       <xd:desc xml:lang="en">Show final xslq conf</xd:desc>

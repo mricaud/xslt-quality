@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<conf xmlns="https://github.com/mricaud/xsl-quality" ignore-roles="info warning">
-  <alias idref="mricaud">
-    <report idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
+<conf xmlns="https://github.com/mricaud/xsl-quality">
+  <alias idref="check-namespace">
+    <report idref="xslt-quality_ns-global-statements-need-prefix"/>
+    <assert idref="xslqual-RedundantNamespaceDeclarations" test="test"/>
   </alias>
 </conf>

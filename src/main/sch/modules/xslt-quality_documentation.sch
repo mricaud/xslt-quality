@@ -13,13 +13,17 @@
     </xd:desc>
   </xd:doc>
   
-  <rule context="/xsl:stylesheet">
+  <rule context="/xsl:stylesheet"
+    id="xslt-quality_documentation-stylesheet">
     <xd:doc>
       <xd:desc xml:lang="en">Indicate what your XSLT is doing as a minimal documentation set. When your XSLT performs a transformation (not a library) you could also describe the data expected as input, and the data generated as output.</xd:desc>
       <xd:desc xml:lang="fr">Indiquer ce que votre XSLT fait comme documentation minimale. Si votre XSLT effectue une transformation (à l'opposé d'une librairie) vous pourriez indiquer les données attendues en entrée et celles qui seront générées en sortie.</xd:desc>
     </xd:doc>
-    <assert test="xd:doc[@scope = 'stylesheet']" id="xslt-quality_documentation-stylesheet">
-      [documentation] Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet">
+    <assert id="xslt-quality_documentation-stylesheet-docblock"
+      test="if(not(xslq:is-active(., 'xslt-quality_documentation-stylesheet'))) then (true()) else(
+      xd:doc[@scope = 'stylesheet']
+      )">
+      [xslt-quality_documentation-stylesheet] Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet">
     </assert>
   </rule>
   
