@@ -5,6 +5,7 @@
   xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xmlns="https://github.com/mricaud/xsl-quality"
   xml:lang="en"
+  expand-text="true"
   version="3.0">
 
   <xd:doc scope="stylesheet">
@@ -88,6 +89,19 @@
       <xsl:apply-templates select="descendant::sch:*/@*" mode="xslq:generate-default-conf-parameters"/>
       <xsl:apply-templates mode="#current"/>
     </conf>
+  </xsl:template>
+  
+  <!--check before continue-->
+  <xsl:template match="(sch:assert | sch:report)[@id]" mode="xslq:generate-default-conf" priority="1">
+    <xsl:choose>
+      <xsl:when test="not(contains(@test, 'xslq:is-active('))">
+        <xsl:message>{name()} id="{@id}" don't use xslq:is-active in its test attribute</xsl:message>
+      </xsl:when>
+      <xsl:when test="not(contains(@test, @id))">
+        <xsl:message>{name()} id="{@id}" uses xslq:is-active but without its id as parameter</xsl:message>
+      </xsl:when>
+    </xsl:choose>
+    <xsl:next-match/>
   </xsl:template>
   
   <xsl:template match="(sch:pattern | sch:rule | sch:assert | sch:report)[@id]" mode="xslq:generate-default-conf">

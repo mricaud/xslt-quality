@@ -18,8 +18,12 @@
       <xd:desc xml:lang="en">Typing your variables, parameters and function makes your XSLT much more efficient: you will be warn with inconsistency at compilation time (when writing in Oxygen). Bad type errors from your data will be detected sooner at run-time, which will make debuging much easier.</xd:desc>
       <xd:desc xml:lang="fr">Typer vos variables, paramètres et fonctions rendra votre XSLT beaucoup plus robuste : vous serez avertis à la compalation (pendant que vous codez sous Oxygen) des inconsistence éventuelles. Pendant l'exécution, les erreurs de types liées à vos données seront détectée bien plus tôt ce qui facilitera grandement le débogage.</xd:desc>
     </xd:doc>
-    <report test="$xslt.version = ('2.0', '3.0') and not(@as)" diagnostics="addType" id="xslt-quality_typing-with-as-attribute">
-      [typing] <name/> is not typed
+    <report id="xslt-quality_typing-with-as-attribute"
+      test="if(not(xslq:is-active(., 'xslt-quality_typing-with-as-attribute'))) then (false()) else(
+      $xslt.version = ('2.0', '3.0') and not(@as)
+      )"
+      diagnostics="addType">
+      [xslt-quality_typing-with-as-attribute] <name/> is not typed
     </report>
   </rule>
   

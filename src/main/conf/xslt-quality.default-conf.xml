@@ -55,9 +55,7 @@
       <report idref="xslt-quality_use-resolve-uri-instead-of-concat" active="true"/>
    </pattern>
    <pattern idref="xslt-quality_documentation" active="true">
-      <rule idref="xslt-quality_documentation-stylesheet" active="true">
-         <assert idref="xslt-quality_documentation-stylesheet-docblock" active="true"/>
-      </rule>
+      <assert idref="xslt-quality_documentation-stylesheet" active="true"/>
    </pattern>
    <pattern idref="xslt-quality_namespaces" active="true">
       <rule idref="xslt-quality_namespaces_name" active="true">
@@ -74,13 +72,12 @@
       <report idref="xslt-quality_typing-with-as-attribute" active="true"/>
    </pattern>
    <pattern idref="xslt-quality_writing" active="true">
-      <report idref="xslt-quality_writing-use-select-attribute-when-possible"
-              active="true"/>
+      <report idref="xslt-quality_use-select-attribute-when-possible" active="true"/>
    </pattern>
    <pattern idref="xslt-quality_xslt-3.0" active="true">
       <report idref="xslt-quality_xslt-3.0-import-first" active="true"/>
    </pattern>
    <pattern idref="xslt-quality_debug" active="false">
-      <rule idref="xslt-quality_debug-root" active="true"/>
+      <report idref="xslt-quality_serialize-conf" active="true"/>
    </pattern>
 </conf>

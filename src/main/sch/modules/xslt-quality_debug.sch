@@ -13,13 +13,15 @@
     </xd:desc>
   </xd:doc>
   
-  <rule context="/"
-    id="xslt-quality_debug-root">
+  <rule context="/">
     <xd:doc>
       <xd:desc xml:lang="en">Show final xslq conf</xd:desc>
       <xd:desc xml:lang="fr">Affiche la conf xslq finale</xd:desc>
     </xd:doc>
-    <report test="true()">
+    <report id="xslt-quality_serialize-conf"
+      test="if(not(xslq:is-active(., 'xslt-quality_serialize-conf'))) then (false()) else(
+      true()
+      )">
       <value-of select="serialize($xslq:conf-merged)"/>
     </report>
   </rule>
