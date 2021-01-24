@@ -12,7 +12,11 @@
     <param name="xslqual-FunctionComplexity-maxSize">10</param>
     <pattern idref="xslt-quality_documentation" active="false"/>
     <assert idref="xslqual-UnusedParameter" active="false"/>
-    <alias idref="check-namespace"/>
+    <!--<alias idref="check-namespace"/>-->
+    <!--<assert idref="xslqual-RedundantNamespaceDeclarations" active="true"/>-->
+    <pattern idref="xslt-quality_debug" active="true"/>
+    <rule idref="xslqual-UnusedFunction" active="false"/>
+    <!--<xslqual-UnusedFunction active="true/false"/>-->
   </conf>
   
   <!--================================================-->
@@ -26,7 +30,10 @@
   <xsl:variable name="xslq:conf-default-resolved" as="document-node()" select="xslq:resolve-conf($xslq:conf-default)"/>
   <xsl:variable name="xslq:conf-local" as="document-node()">
     <xsl:document>
-      <xsl:sequence select="/xsl:*/xslq:conf[1]"/>
+      <xslq:conf>
+        <xsl:attribute name="xml:base" select="base-uri()"/>
+        <xsl:sequence select="/xsl:*/xslq:conf[1]/node()"/>
+      </xslq:conf>
     </xsl:document>
   </xsl:variable>
   <xsl:variable name="xslq:conf-local-resolved" as="document-node()" select="xslq:resolve-conf($xslq:conf-local)"/>
@@ -41,6 +48,24 @@
   <xsl:key name="getConfParamByName" match="xslq:param" use="@name"/>
   
   <!--================================================-->
+  <!--Template xslq:conf-debug-->
+  <!--================================================-->
+  
+  <!--Call this XSLT on your xsl input with initial template Q{https://github.com/mricaud/xsl-quality}conf-debug
+  to have debug information-->
+  
+  <xsl:template name="xslq:conf-debug">
+    <xslq:conf-debug>
+      <xslq:conf-default-resolved>
+        <xsl:sequence select="$xslq:conf-default-resolved"/>
+      </xslq:conf-default-resolved>
+      <xslq:conf-local-resolved>
+        <xsl:sequence select="$xslq:conf-local-resolved"/>
+      </xslq:conf-local-resolved>
+    </xslq:conf-debug>
+  </xsl:template>
+  
+  <!--================================================-->
   <!--Functions-->
   <!--================================================-->
   
@@ -49,7 +74,7 @@
     <xsl:param name="conf" as="document-node()"/>
     <xsl:document>
       <xsl:apply-templates select="$conf" mode="xslq:resolve-conf">
-        <xsl:with-param name="current-base-uri" select="base-uri($conf)" tunnel="yes" as="xs:anyURI"/>
+        <xsl:with-param name="current-base-uri" select="base-uri($conf/*)" tunnel="yes" as="xs:anyURI"/>
       </xsl:apply-templates>
     </xsl:document>
   </xsl:function>
@@ -116,7 +141,7 @@
   
   <xsl:template match="xslq:include" mode="xslq:resolve-conf">
     <xsl:param name="uris-already-visited" as="xs:anyURI*" tunnel="yes"/>
-    <xsl:param name="current-base-uri" as="xs:anyURI" tunnel="yes" select="base-uri(root(.))"/>
+    <xsl:param name="current-base-uri" as="xs:anyURI" tunnel="yes" select="base-uri(.)"/>
     <xsl:variable name="this-name" select="name(.)" as="xs:string"/>
     <xsl:variable name="target-uri" select="resolve-uri(@href, $current-base-uri)" as="xs:anyURI?"/>
     <xsl:variable name="target-available" select="doc-available($target-uri)" as="xs:boolean"/>
@@ -173,13 +198,15 @@
   <xsl:template match="xslq:*[@idref]" mode="xslq:merge-conf">
     <xsl:variable name="idref" as="xs:string" select="@idref"/>
     <!--there could not be multiple override of the same element in the local conf, choose the last one if so-->
-    <xsl:variable name="conf-local-override-element" as="element()?" select="$xslq:conf-local-resolved/descendant-or-self::*[@idref][@idref = $idref][last()]"/>
+    <xsl:variable name="conf-local-override-element" as="element()?" 
+      select="$xslq:conf-local-resolved/descendant-or-self::*[@idref][@idref = $idref][last()]"/>
     <xsl:choose>
       <xsl:when test="exists($conf-local-override-element)">
         <!--don't replace the whole subtree of the element, but only the element itself without children-->
         <xsl:variable name="node" as="node()*" select="node()"/>
         <xsl:copy select="$conf-local-override-element" copy-namespaces="false">
           <xsl:sequence select="$conf-local-override-element/@*"/>
+          <xsl:attribute name="overrided" select="'true'"/>
           <xsl:apply-templates select="$node" mode="#current"/>
         </xsl:copy>
       </xsl:when>
@@ -202,9 +229,5 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <xsl:template match="/">
-    
-  </xsl:template>
-  
+
 </xsl:stylesheet>
