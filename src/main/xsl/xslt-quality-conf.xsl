@@ -178,14 +178,15 @@
       <xsl:sequence select="$xslq:conf-local-resolved/xslq:conf/@*"/>
       <xsl:apply-templates select="node()" mode="#current"/>
       <!--Deal with aliases-->
-      <xsl:for-each select="distinct-values($xslq:conf-local-resolved//xslq:alias[xslq:*]/@idref)">
+      <xsl:for-each select="distinct-values($xslq:conf-local-resolved//xslq:alias[xslq:*]/@id)">
         <xsl:variable name="idref" as="xs:string" select="."/>
-        <xsl:variable name="alias-def" as="element()" select="($xslq:conf-local-resolved//xslq:alias[xslq:*][@idref = $idref])[last()]"/>
+        <xsl:variable name="alias-def" as="element()" select="($xslq:conf-local-resolved//xslq:alias[xslq:*][@id = $idref])[last()]"/>
         <xsl:variable name="alias-override" as="element()?" select="($xslq:conf-local-resolved//xslq:alias[not(xslq:*)][@idref = $idref])[last()]"/>
         <!--<alias-def><xsl:sequence select="$alias-def"/></alias-def>
         <alias-override><xsl:sequence select="$alias-override"/></alias-override>-->
         <xsl:copy select="$alias-def" copy-namespaces="false">
-          <xsl:copy-of select="$alias-def/@*"/>
+          <xsl:copy-of select="$alias-def/@* except $alias-def/@id"/>
+          <xsl:attribute name="idref" select="$alias-def/@id"/>
           <xsl:if test="not(empty($alias-override))">
             <xsl:attribute name="active" select="($alias-override/@active, 'true')[1]"/>
           </xsl:if>
