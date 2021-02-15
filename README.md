@@ -65,6 +65,7 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. In the new entry click "XML Document" under File type.
 1. Double-click on the Schema column.
 1. Click Use custom schema, and use the URL bar to point to `xslt-quality.sch`
+jar:file:C:\path\to\xslt-quality-1.0.0-SNAPSHOT.jar!/sch/xslt-quality.sch
 1. Click OK (Three times)
 
 In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT.
