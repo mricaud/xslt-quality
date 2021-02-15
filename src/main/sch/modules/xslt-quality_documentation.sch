@@ -19,10 +19,8 @@
       <xd:desc xml:lang="fr">Indiquer ce que votre XSLT fait comme documentation minimale. Si votre XSLT effectue une transformation (à l'opposé d'une librairie) vous pourriez indiquer les données attendues en entrée et celles qui seront générées en sortie.</xd:desc>
     </xd:doc>
     <assert id="xslt-quality_documentation-stylesheet"
-      test="if(not(xslq:is-active(., 'xslt-quality_documentation-stylesheet'))) then (true()) else(
-      xd:doc[@scope = 'stylesheet']
-      )">
-      [xslt-quality_documentation-stylesheet] Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet">
+      test="xd:doc[@scope = 'stylesheet']">
+      Please add a documentation block for the whole stylesheet : &lt;xd:doc scope="stylesheet">
     </assert>
   </rule>
   

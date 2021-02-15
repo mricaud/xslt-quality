@@ -19,10 +19,8 @@
       <xd:desc xml:lang="fr">Si vous n'avez pas besoin d'instruction XSLT spécifiques pour calculer une variable, un paramètre (ou tout autre attribut, namespace) utilisez la syntaxe rapide "select=" qui rendra votre code moins verbeux et plus facile à lire.</xd:desc>
     </xd:doc>
     <report id="xslt-quality_use-select-attribute-when-possible"
-      test="if(not(xslq:is-active(., 'xslt-quality_use-select-attribute-when-possible'))) then (false()) else(
-      not(@select) and (count(* | text()[normalize-space(.)]) = 1) and (count(xsl:value-of | xsl:sequence | text()[normalize-space(.)]) = 1)
-      )">
-      [writing] Use @select to assign a value to <name/>
+      test="not(@select) and (count(* | text()[normalize-space(.)]) = 1) and (count(xsl:value-of | xsl:sequence | text()[normalize-space(.)]) = 1)">
+      Use @select to assign a value to <name/>
     </report>
   </rule>
   

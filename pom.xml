@@ -54,6 +54,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
+  <!--<dependencies>
+    <dependency>
+      <groupId>org.mricaud.xml</groupId>
+      <artifactId>xut</artifactId>
+      <version>0.1.1</version>
+    </dependency>
+  </dependencies>-->
+  
+  
   <build>
     <resources>
       <resource>
@@ -61,6 +70,90 @@
         <filtering>false</filtering>
       </resource>
     </resources>
+    
+    <plugins>
+      
+      <!--A plugin to generate a fat jar including all dependencies-->
+      <!--<plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>-->
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformationSets>
+            <transformationSet>
+              <dir>src/main/sch/modules</dir>
+              <includes>
+                <include>*.sch</include>
+              </includes>
+              <stylesheet>src/build/xslt-quality-precompile-schematron.xsl</stylesheet>
+              <outputDir>target/classes/sch/modules</outputDir>
+            </transformationSet>
+            <transformationSet>
+              <dir>src/main/sch</dir>
+              <includes>
+                <include>xslt-quality.sch</include>
+              </includes>
+              <stylesheet>src/build/xslt-quality-generate-default-conf.xsl</stylesheet>
+              <outputDir>target/classes/conf</outputDir>
+              <fileMappers>
+                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                  <pattern>^.*?$</pattern>
+                  <replacement>xslt-quality.default-conf.xml</replacement>
+                </fileMapper>
+              </fileMappers>
+            </transformationSet>
+            <transformationSet>
+              <dir>src/main/sch</dir>
+              <includes>
+                <include>xslt-quality.sch</include>
+              </includes>
+              <stylesheet>src/build/xslt-quality-generate-rng-values.xsl</stylesheet>
+              <outputDir>target/classes/grammars</outputDir>
+              <fileMappers>
+                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                  <pattern>^.*?$</pattern>
+                  <replacement>conf-attr.values.rng</replacement>
+                </fileMapper>
+              </fileMappers>
+            </transformationSet>
+          </transformationSets>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.8.0-8</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      
+    </plugins>
   </build>
   
 </project>

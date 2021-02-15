@@ -19,16 +19,14 @@
       <xd:desc xml:lang="fr">l'utilisation de xsl:for-each sur des nœuds peut être un indice de programmation procedural. XSLT est un langage de règles dirigé par les données. Vous devriez peut-être considéré l'utilisation de xsl:apply-templates à la place.</xd:desc>
     </xd:doc>
     <report id="xslt-quality_avoid-for-each"
-      test="if(not(xslq:is-active(., 'xslt-quality_avoid-for-each'))) then (false()) else(
-      ancestor::xsl:template 
+      test="ancestor::xsl:template 
       and not(starts-with(@select, '$'))
       and not(starts-with(@select, 'tokenize('))
       and not(starts-with(@select, 'distinct-values('))
       and not(starts-with(@select, 'string-to-codepoints('))
-      and not(matches(@select, '\d'))
-      )" 
+      and not(matches(@select, '\d'))" 
       role="warning">
-      [common] Should you use xsl:apply-template instead of xsl:for-each 
+      Should you use xsl:apply-template instead of xsl:for-each 
     </report>
   </rule>
   
@@ -38,10 +36,8 @@
       <xd:desc xml:lang="fr">la concaténation de chaînes de caractère pour résoudre une URI n'est pas générique (les chemins sous Windows et Linux ne sont pas les mêmes) - Considérez plutôt l'utilisation de la fonction dédiée resolve-uri()</xd:desc>
     </xd:doc>
     <report id="xslt-quality_use-resolve-uri-instead-of-concat"
-      test="if(not(xslq:is-active(., 'xslt-quality_use-resolve-uri-instead-of-concat'))) then (false()) else(
-      contains(., 'document(concat(') or contains(., 'doc(concat(')
-      )">
-      [common] Avoid using concat within document() or doc() function, use resolve-uri() instead (you may use static-base-uri() or base-uri())
+      test="contains(., 'document(concat(') or contains(., 'doc(concat(')">
+      Avoid using concat within document() or doc() function, use resolve-uri() instead (you may use static-base-uri() or base-uri())
     </report>
   </rule>
   

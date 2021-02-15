@@ -20,11 +20,9 @@
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos variables et paramètres globaux rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
     <assert id="xslt-quality_ns-global-statements-need-prefix"
-      test="if(not(xslq:is-active(., 'xslt-quality_ns-global-statements-need-prefix'))) then (true()) else(
-      every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))
-      )" 
+      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))" 
       role="warning">
-      [xslt-quality_ns-global-statements-need-prefix] <value-of select="local-name(parent::*)"/> <name/>="<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+      <value-of select="local-name(parent::*)"/> <name/>="<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>
   
@@ -35,11 +33,9 @@
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos mode de template rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
     <assert id="xslt-quality_ns-mode-statements-need-prefix"
-      test="if(not(xslq:is-active(., 'xslt-quality_ns-mode-statements-need-prefix'))) then (true()) else(
-      every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))
-      )"
+      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))"
       role="warning">
-      [xslt-quality_ns-mode-statements-need-prefix] <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+      <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>
   
@@ -50,10 +46,8 @@
       <xd:desc xml:lang="fr">Évitez d'utiliser "*:" dans vos xpath : cela va ralentir votre processeur XSLT qui sera forcé de vérifier le nom local des balises au lieur de manipuler des nœuds XML.</xd:desc>
     </xd:doc>
     <report id="xslt-quality_ns-do-not-use-wildcard-prefix"
-      test="if(not(xslq:is-active(., 'xslt-quality_ns-do-not-use-wildcard-prefix'))) then (false()) else(
-      contains(., '*:')
-      )">
-      [xslt-quality_ns-do-not-use-wildcard-prefix] Use a namespace prefix instead of *:
+      test="contains(., '*:')">
+      Use a namespace prefix instead of *:
     </report>
   </rule>
   

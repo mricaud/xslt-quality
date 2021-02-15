@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grammar 
+  xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+  ns="https://github.com/mricaud/xsl-quality"
+  >
+  
+  <include href="conf.rng">
+    <start>
+      <element ns="http://www.w3.org/1999/XSL/Transform">
+        <anyName/>
+        <zeroOrMore>
+          <attribute>
+            <anyName/>
+          </attribute>
+        </zeroOrMore>
+        <zeroOrMore>
+          <choice>
+            <ref name="anyElementExceptXslqConf"/>
+            <ref name="conf"/>
+          </choice>
+        </zeroOrMore>
+      </element>
+    </start>
+  </include>
+  
+  <define name="anyElementExceptXslqConf">
+    <element>
+      <anyName>
+        <except>
+          <name>conf</name>
+          <nsName ns="https://github.com/mricaud/xsl-quality"/>
+        </except>
+      </anyName>
+      <ref name="anything"/>
+    </element>
+  </define>
+  
+  <define name="anything">
+    <zeroOrMore>
+      <choice>
+        <element>
+          <anyName/>
+          <ref name="anything"/>
+        </element>
+        <attribute>
+          <anyName/>
+        </attribute>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  
+</grammar>

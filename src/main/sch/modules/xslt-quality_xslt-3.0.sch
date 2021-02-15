@@ -19,10 +19,8 @@
       <xd:desc xml:lang="fr">En XSLT 1.0 et 2.0, les xsl:import devaient venir en 1er, avant même le bloc de documentation. Cela a été corriger en XSLT 3.0, vous pouvez donc déplacer ces xsl:import après le bloc de documentation qui a vocation a être le 1er élément de votre XSLT.</xd:desc>
     </xd:doc>
     <report id="xslt-quality_xslt-3.0-import-first" role="info"
-      test="if(not(xslq:is-active(., 'xslt-quality_xslt-3.0-import-first'))) then (false()) else(
-      following-sibling::xd:doc[@scope = 'stylesheet']
-      )">
-      [XSLT-3.0] When using XSLT 3.0 xsl:import may come after the xd:doc block
+      test="following-sibling::xd:doc[@scope = 'stylesheet']">
+      When using XSLT 3.0 xsl:import may come after the xd:doc block
     </report>
   </rule>
   

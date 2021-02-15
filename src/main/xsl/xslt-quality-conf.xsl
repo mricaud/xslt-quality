@@ -2,21 +2,21 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:err="http://www.w3.org/2005/xqt-errors"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:sch="http://purl.oclc.org/dsdl/schematron"
   xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xml:lang="en"
   version="3.0">
   
+  <xd:doc scope="stylesheet">
+    <xd:desc>
+      <xd:p>This XSLT implements xsl-quality customizations which allows user to set a conf and ignore any pattern/rules/report/assert</xd:p>
+      <xd:p>This XSLT defines functions that are directly called from xslt-quality.sch (xslq:is-active and xslq:get-param-value)</xd:p>
+    </xd:desc>
+  </xd:doc>
+  
   <conf xmlns="https://github.com/mricaud/xsl-quality">
-    <include href="../conf/my-xslq-conf.xml"/>
-    <param name="xslqual-FunctionComplexity-maxSize">10</param>
     <pattern idref="xslt-quality_documentation" active="false"/>
-    <assert idref="xslqual-UnusedParameter" active="false"/>
-    <!--<alias idref="check-namespace"/>-->
-    <!--<assert idref="xslqual-RedundantNamespaceDeclarations" active="true"/>-->
-    <pattern idref="xslt-quality_debug" active="true"/>
-    <rule idref="xslqual-UnusedFunction" active="false"/>
-    <!--<xslqual-UnusedFunction active="true/false"/>-->
+    <item idref="xslqual-DontUseDoubleSlashOperator" active="false"/>
+    <item idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
   </conf>
   
   <!--================================================-->
@@ -51,10 +51,9 @@
   <!--Template xslq:conf-debug-->
   <!--================================================-->
   
-  <!--Call this XSLT on your xsl input with initial template Q{https://github.com/mricaud/xsl-quality}conf-debug
-  to have debug information-->
-  
-  <xsl:template name="xslq:conf-debug">
+  <xd:doc>Call this XSLT on your xsl input with initial template Q{https://github.com/mricaud/xsl-quality}conf-debug
+    to have debug information</xd:doc>
+  <xsl:template name="xslq:conf-debug" xslq:ignore="xslqual-UnusedNamedTemplate">
     <xslq:conf-debug>
       <xslq:conf-default-resolved>
         <xsl:sequence select="$xslq:conf-default-resolved"/>
@@ -69,7 +68,7 @@
   <!--Functions-->
   <!--================================================-->
   
-  <!--Resolve conf inclusions-->
+  <xd:doc>Resolve conf inclusions</xd:doc>
   <xsl:function name="xslq:resolve-conf" as="document-node()">
     <xsl:param name="conf" as="document-node()"/>
     <xsl:document>
@@ -79,11 +78,13 @@
     </xsl:document>
   </xsl:function>
   
+  <xd:doc>Get conf element by idref</xd:doc>
   <xsl:function name="xslq:get-conf-element" as="element()?">
     <xsl:param name="sch-idref" as="xs:string"/>
     <xsl:sequence select="key('getConfElementByIdref', $sch-idref, $xslq:conf-merged)[last()]"/>
   </xsl:function>
   
+  <xd:doc>Get conf param element by name (if exist)</xd:doc>
   <xsl:function name="xslq:get-conf-param" as="element()*">
     <xsl:param name="name" as="xs:string"/>
     <xsl:sequence select="key('getConfParamByName', $name, $xslq:conf-merged)"/>
@@ -109,13 +110,23 @@
     </xsl:choose>
   </xsl:function>
   
-  <!--2 arity version of xslq:get-param-value-->
+  <xd:doc>2 arity version of xslq:get-param-value</xd:doc>
   <xsl:function name="xslq:get-param-value" as="item()*">
     <xsl:param name="param-name" as="xs:string"/>
     <xsl:param name="default-value" as="xs:string"/>
     <xsl:sequence select="xslq:get-param-value($param-name, $default-value, 'xs:string')"/>
   </xsl:function>
   
+  
+  <xd:doc>
+    <xd:desc>
+      <xd:p>This function is called from schematron to define allow changing schematron variable from the conf</xd:p>
+    </xd:desc>
+    <xd:param name="param-name">Name of the parameter</xd:param>
+    <xd:param name="default-value">default atomic value of the parameter (setted in the schematron within the call to this function)</xd:param>
+    <xd:param name="cast-param-as">xs type of the param value (default is xs:string)</xd:param>
+    <xd:return>The typed value of the parameter after checking for conf overriding</xd:return>
+  </xd:doc>
   <xsl:function name="xslq:get-param-value" as="item()?">
     <xsl:param name="param-name" as="xs:string"/>
     <xsl:param name="default-value" as="xs:string"/>
@@ -139,6 +150,7 @@
   
   <xsl:mode name="xslq:resolve-conf" on-no-match="shallow-copy"/>
   
+  <xd:doc>Resolve xslq:include within xslq:conf element</xd:doc>
   <xsl:template match="xslq:include" mode="xslq:resolve-conf">
     <xsl:param name="uris-already-visited" as="xs:anyURI*" tunnel="yes"/>
     <xsl:param name="current-base-uri" as="xs:anyURI" tunnel="yes" select="base-uri(.)"/>
@@ -171,17 +183,17 @@
   
   <xsl:mode name="xslq:merge-conf" on-no-match="shallow-copy"/>
   
-  <!--Matching nodes are from $xslq:conf-default-resolved"-->
+  <xd:doc>Merge conf: matching nodes are from $xslq:conf-default-resolved"</xd:doc>
   <xsl:template match="xslq:conf" mode="xslq:merge-conf">
     <xsl:copy>
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:sequence select="$xslq:conf-local-resolved/xslq:conf/@*"/>
       <xsl:apply-templates select="node()" mode="#current"/>
       <!--Deal with aliases-->
-      <xsl:for-each select="distinct-values($xslq:conf-local-resolved//xslq:alias[xslq:*]/@id)">
+      <xsl:for-each select="distinct-values($xslq:conf-local-resolved//xslq:aliasdef/@id)">
         <xsl:variable name="idref" as="xs:string" select="."/>
-        <xsl:variable name="alias-def" as="element()" select="($xslq:conf-local-resolved//xslq:alias[xslq:*][@id = $idref])[last()]"/>
-        <xsl:variable name="alias-override" as="element()?" select="($xslq:conf-local-resolved//xslq:alias[not(xslq:*)][@idref = $idref])[last()]"/>
+        <xsl:variable name="alias-def" as="element()" select="($xslq:conf-local-resolved//xslq:aliasdef[@id = $idref])[last()]"/>
+        <xsl:variable name="alias-override" as="element()?" select="($xslq:conf-local-resolved//xslq:alias[@idref = $idref])[last()]"/>
         <!--<alias-def><xsl:sequence select="$alias-def"/></alias-def>
         <alias-override><xsl:sequence select="$alias-override"/></alias-override>-->
         <xsl:copy select="$alias-def" copy-namespaces="false">
@@ -196,6 +208,7 @@
     </xsl:copy>
   </xsl:template>
   
+  <xd:doc>Merge conf: merge schematron component references (matching nodes are from $xslq:conf-default-resolved")</xd:doc>
   <xsl:template match="xslq:*[@idref]" mode="xslq:merge-conf">
     <xsl:variable name="idref" as="xs:string" select="@idref"/>
     <!--there could not be multiple override of the same element in the local conf, choose the last one if so-->
@@ -217,6 +230,7 @@
     </xsl:choose>
   </xsl:template>
   
+  <xd:doc>Merge conf: merge parameters (matching nodes are from $xslq:conf-default-resolved")</xd:doc>
   <xsl:template match="xslq:param[@name]" mode="xslq:merge-conf">
     <xsl:variable name="name" as="xs:string" select="@name"/>
     <!--there could not be multiple override of the same element in the local conf, choose the last one if so-->

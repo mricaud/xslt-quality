@@ -19,9 +19,7 @@
       <xd:desc xml:lang="fr">Affiche la conf xslq finale</xd:desc>
     </xd:doc>
     <report id="xslt-quality_serialize-conf"
-      test="if(not(xslq:is-active(., 'xslt-quality_serialize-conf'))) then (false()) else(
-      true()
-      )">
+      test="true()">
       <value-of select="serialize($xslq:conf-merged)"/>
     </report>
   </rule>

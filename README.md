@@ -177,3 +177,26 @@ Later, I intend to make XSLT-quality available on Maven Central, then you should
     - indent with spaces 
     - No break line inside templates
     - Space around operators ( =, +, > etc)
+
+# TODO Release
+
+## 1.0-RC1
+
+- TU sur les schematron avec conf notamment
+- default conf : schéma spécifique car c'est différent (imbrication comme aliasdef mais infini)
+- namespace + nom éléments : conf-override + conf-structure ?
+- Packaging zip avec assembly (generate-source ok ?)
+  - https://xnopre.blogspot.com/2012/11/maven-generer-un-zip-contenant-un-autre.html
+  - https://stackoverflow.com/questions/7837778/maven-best-practice-for-creating-ad-hoc-zip-artifact
+- update README : install oxygen zip + réglage completion + validation 
+- voir si on peut mettre fichier de conf en paramètre dans oxy (ou conf à côté de la xsl ? bof)
+- publication maven central et/ou ajouter release dans github ?
+
+## 1.0-RC2
+
+- TU xsl : pas obligé
+- ajouter ignore-role="info/warning/error"
+- Dependance vers xut pour résolution des includes - rendre xut plus parametrable
+- Dépendance xslLib (à publier sur mv central) : pas obligé
+- Renommer globalement les id, mettre xslq comme préfixe partout puis le nom de l'assert/report simple
+  - le nom du pattern pourra être ajouté en préfixe automatiquement au build [XSLQ][{pattern/@id}]

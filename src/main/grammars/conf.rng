@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grammar 
+  xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+  ns="https://github.com/mricaud/xsl-quality"
+  >
+  
+  <include href="conf-attr.values.rng"/>
+  
+  <start>
+    <ref name="conf"/>
+  </start>
+
+  <define name="conf">
+    <element name="conf">
+      <zeroOrMore>
+        <choice>
+          <ref name="include"/>
+          <ref name="param"/>
+          <ref name="sch-component-ref.def"/>
+          <ref name="alias"/>
+          <ref name="aliasdef"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  
+  <define name="include">
+    <a:documentation xml:lang="en">A way to include another conf. Like in CSS the last rules are applied</a:documentation>
+    <element name="include">
+      <attribute name="href"/>
+      <empty/>
+    </element>
+  </define>
+  
+  <define name="param">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="param">
+      <ref name="param.attr.name"/>
+      <text/>
+    </element>
+  </define>
+  
+  <define name="aliasdef">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="aliasdef">
+      <attribute name="id"/>
+      <ref name="attr.active"/>
+      <zeroOrMore>
+        <ref name="sch-component-ref.def"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  
+  <define name="sch-component-ref.def">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <choice>
+      <ref name="item"/>
+      <ref name="pattern"/>
+      <ref name="rule"/>
+      <ref name="assert"/>
+      <ref name="report"/>
+    </choice>
+  </define>
+  
+  
+  
+  <define name="item">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="item">
+      <ref name="sch-item.attr.idref"/>
+      <ref name="attr.active"/>
+      <zeroOrMore>
+        <ref name="sch-component-ref.def"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  
+  <define name="assert">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="assert">
+      <ref name="sch-assert.attr.idref"/>
+      <ref name="attr.active"/>
+    </element>
+  </define>
+  
+  <define name="report">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="report">
+      <ref name="sch-report.attr.idref"/>
+      <ref name="attr.active"/>
+    </element>
+  </define>
+  
+  <define name="rule">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="rule">
+      <ref name="sch-rule.attr.idref"/>
+      <ref name="attr.active"/>
+    </element>
+  </define>
+  
+  <define name="pattern">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="pattern">
+      <ref name="sch-pattern.attr.idref"/>
+      <ref name="attr.active"/>
+    </element>
+  </define>
+  
+  <define name="alias">
+    <a:documentation xml:lang="en">FIXME</a:documentation>
+    <element name="alias">
+      <attribute name="idref">
+        <!--One cannot know aliasdef ids which is user defined-->
+      </attribute>
+      <ref name="attr.active"/>
+    </element>
+  </define>
+  
+  <define name="attr.active">
+    <optional>
+      <attribute name="active">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  
+</grammar>
