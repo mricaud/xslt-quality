@@ -64,11 +64,13 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. Click Add
 1. In the new entry click "XML Document" under File type.
 1. Double-click on the Schema column.
-1. Click Use custom schema, and use the URL bar to point to `xslt-quality.sch`
-jar:file:C:\path\to\xslt-quality-1.0.0-SNAPSHOT.jar!/sch/xslt-quality.sch
+1. Click Use custom schema, and use the URL bar to point to `xslt-quality.sch` within the jar, it should look like this: 
+
+`jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/sch/xslt-quality.sch`
+
 1. Click OK (Three times)
 
-In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT.
+In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT. 
 
 ## Configure xslt-quality
 
@@ -80,7 +82,7 @@ Xslt-quality is also highly configurable, you can easily control and calibrate x
 
 Xslt-quality is using its default configuration file at [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml), there are multiple manner to override this file, see next sections.
 
-Let's see how this conf file works: it represents a hierarchic view of the architecture of [xslt-quality.sch](src/main/sch/xslt-quality.sch) with its modules (pattern), rules, assertions and reports, with and `@idref` attribute  (pointing to the corresponding schematron element). An extra `@activate` attribute allows to desactivate any of these elements. This mean desactivating the whole sub-elements.
+Let's see how this conf file works: it represents a hierarchic view of the architecture of [xslt-quality.sch](src/main/sch/xslt-quality.sch) with its modules (pattern), rules, assertions and reports, with and `@idref` attribute  (pointing to the corresponding schematron element). An extra `@activate` attribute allows to desactivate any of these elements. This means desactivating the whole sub-elements.
 That's why it's important that elements are nested to exactly reflect the real schematron hierarchy.
 
 > Note : this file might generated automatically
@@ -90,8 +92,8 @@ Some parameters value might also be defined to refine some rules behaviour.
 Extract from this conf:
 
 ```
-<conf xmlns="https://github.com/mricaud/xsl-quality"
-  ignore-roles="info">
+<conf xmlns="https://github.com/mricaud/xsl-quality">
+  <param name="xslqual-FunctionComplexity-maxSize">50</param>
   <module idref="xslt-quality_writing" active="true"/>
   <module idref="xslt-quality_namespaces" active="false"/>
   <module idref="xslt-quality_mukulgandhi-rules" active="true">
@@ -110,6 +112,8 @@ Extract from this conf:
 </conf>
 ```
 
+> Note: you won't find this default conf within the source files, it is generated at build time so it takes part of xslt-quality jar distribution.
+
 ### Override the default full conf
 
 Oxygen doesn't allow to send parameters to schematron, but if your schematron processor allows it, you can override the parameter `$xslq:conf.uri` to use another file. Be careful, this file has to be full (declare every xslt-quality components: asssert/report at least).
@@ -120,11 +124,8 @@ adding `{https://github.com/mricaud/xsl-quality}conf` as a 2nd-level element in 
 
 ```
 <conf xmlns="https://github.com/mricaud/xsl-quality" ignore-roles="info warning">
-  <assert idref="xslqual-UnusedFunction" active="true"/>
+  <param name="xslqual-FunctionComplexity-maxSize">100</param>
   <assert idref="xslqual-UnusedParameter" active="false"/>
-  <report idref="xslqual-FunctionComplexity">
-    <param name="maxSize">5</param>
-  </report>
 </conf>
 ```
 
@@ -138,7 +139,7 @@ You may place that element anywhere in the stylesheet being tested, at the begin
 
 ### Override conf at stylesheet component level
 
-You can add an attribute `xslq:ignore` on any element of your stylesheet. The value is a list of assert/="xslqual-FunctionComplexity"
+You can add an attribute `xslq:ignore` on any element of your stylesheet. The value is a list of schematron component id references.
 
 ## MAVEN
 
@@ -190,6 +191,7 @@ Later, I intend to make XSLT-quality available on Maven Central, then you should
   - https://stackoverflow.com/questions/7837778/maven-best-practice-for-creating-ad-hoc-zip-artifact
 - update README : install oxygen zip + réglage completion + validation 
 - voir si on peut mettre fichier de conf en paramètre dans oxy (ou conf à côté de la xsl ? bof)
+- Intégrer SQF de Joël
 - publication maven central et/ou ajouter release dans github ?
 
 ## 1.0-RC2
