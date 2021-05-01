@@ -191,7 +191,7 @@ Later, I intend to make XSLT-quality available on Maven Central, then you should
   - https://stackoverflow.com/questions/7837778/maven-best-practice-for-creating-ad-hoc-zip-artifact
 - update README : install oxygen zip + réglage completion + validation 
 - voir si on peut mettre fichier de conf en paramètre dans oxy (ou conf à côté de la xsl ? bof)
-- Intégrer SQF de Joël
+- Intégrer schematron quick fix de Joël
 - publication maven central et/ou ajouter release dans github ?
 
 ## 1.0-RC2

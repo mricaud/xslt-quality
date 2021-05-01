@@ -202,9 +202,24 @@
           <xsl:if test="not(empty($alias-override))">
             <xsl:attribute name="active" select="($alias-override/@active, 'true')[1]"/>
           </xsl:if>
-          <xsl:copy-of select="$alias-def/node()" copy-namespaces="false"/>
+          <xsl:apply-templates select="$alias-def/node()" mode="xslq:merge-conf-expand-alias"/>
+          <!--<xsl:copy-of select="$alias-def/node()" copy-namespaces="false"/>-->
         </xsl:copy>
       </xsl:for-each>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="node() | @*" mode="xslq:merge-conf-expand-alias">
+    <xsl:copy copy-namespaces="false">
+      <xsl:apply-templates select="node() | @*" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!--Aliases need to be expanded so inheritance on active attribute works-->
+  <xsl:template match="xslq:aliasdef/*[self::xslq:pattern or self::xslq:rule]" mode="xslq:merge-conf-expand-alias">
+    <xsl:copy copy-namespaces="false">
+      <xsl:copy-of select="@*"/>
+      <xsl:sequence select="$xslq:conf-default-resolved//xslq:pattern[not(parent::xslq:aliasdef)][@idref = current()/@idref]/node()"/>
     </xsl:copy>
   </xsl:template>
   

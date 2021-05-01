@@ -20,7 +20,7 @@
     </xd:doc>
     <report id="xslt-quality_serialize-conf"
       test="true()">
-      <value-of select="serialize($xslq:conf-merged)"/>
+      xslq:conf-merged : <value-of select="serialize($xslq:conf-merged)"/>
     </report>
   </rule>
   
