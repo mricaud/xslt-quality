@@ -254,7 +254,7 @@ XSLT-Quality is distributed as a ZIP file.
 
 ### Downloading the distribution
 
-You can download the zip here: ... TODO
+You can download the zip here: https://github.com/mricaud/xslt-quality/releases/tag/xslt-quality-1.0.0-SNAPSHOT-dist-2021-05-03.1932
 
 
 ### Using Maven
