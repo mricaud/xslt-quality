@@ -2,7 +2,7 @@
 <!--Localy build the maven project before being able to validate this file-->
 <?xml-model href="../../../target/classes/grammars/conf.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <conf xmlns="https://github.com/mricaud/xsl-quality">
-  <pattern idref="xslt-quality_documentation" active="false"/>
+  <pattern idref="xslt-quality_documentation" active="true"/>
   <include href="my-aliases-dir/conf-aliases.xml"/>
   <alias idref="unimportant-rules" active="false"/>
 </conf>

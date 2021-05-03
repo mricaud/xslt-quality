@@ -22,7 +22,6 @@
     <assert idref="xslqual-UnusedFunction" active="false"/>
     <alias idref="check-namespace" active="false"/>
     <alias idref="unimportant-rules" active="false"/>
-    
   </conf>
   
   <xsl:import href="sample-lib.xsl"/>

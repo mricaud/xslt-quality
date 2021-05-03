@@ -140,7 +140,7 @@ With the following conf file next to your XSLT `my-custom-conf.xml`:
 </conf>
 ```
 
-> Conf files might be imported reccursively. When 2 settings rules are defined twice (or more), the last one value from the XSLT file is used, like CSS rules.
+> Conf files might be imported recursively. Note that when there's a conflict (one rule is activated in one conf an deactivated elsewhere), the last one value from the XSLT file is used, like CSS rules.
 
 ### Defining and using aliases
 
@@ -206,24 +206,26 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. Double-click on the Schema column.
 1. Click `Use custom schema`, and use the URL bar to point to `xslt-quality.sch` within the distribution, it should look like this: 
 
-    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/sch/xslt-quality.sch`
+    `jar:file:/path/to/xslt-quality-1.0.0-RC1-dist.zip!/xslt-quality-1.0.0-RC1-dist/sch/xslt-quality.sch`
 
 1. Click OK (Three times)
 
 In this way, both Oxygen default schematron and xslt-quality schematron are applied to your XSLT.
 
+> Note : use the `jar:` scheme to point a file within the zip (zip: scheme doesn't exist)
+
 ### Configuration setting validation and completion with Oxygen
 
 #### Conf completion
 
-This section describle how to allow Oxygen to suggest schema aware completion on xsl-quality conf fragment within your XSLT.
+This section describle how to allow Oxygen to suggest schema aware completion on xslt-quality conf fragment within your XSLT.
 
 1. Go to Options > Preferences > Editor > Content Completion > XSLT
 1. Check *Custom Schema* and fill in the field with:
 
-    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/grammars/xslt-embeded-xslq-conf.rng`
-
-Once this is done, you now have code completion from you XSLT for any elements or attribute. This is realy helpfull for `<param name="..."/>` or any other elements like `<pattern idref="...">`, `<rule idref="...">`, `<assert idref="...">` or `<report idref="...">`.
+    `jar:file:/path/to/xslt-quality-1.0.0-RC1-dist.zip!/xslt-quality-1.0.0-RC1-dist/grammars/xslt-embeded-xslq-conf.rng`
+    
+Now you have code completion from you XSLT in Oxygen for any elements or attribute. This is really helpful for `<param name="..."/>` or any other elements like `<pattern idref="...">`, `<rule idref="...">`, `<assert idref="...">` or `<report idref="...">`.
 
 > Note: `<aliases idref="..."/>` won't be listed in the content completion, cause it depends on you own aliases definition.
 
@@ -240,7 +242,7 @@ This section describe how to set the xslt-quality configuration fragment validat
 1. Double-click on the Schema column.
 1. Click `Use custom schema`, and use the URL bar to point to `xslt-embeded-xslq-conf.rng` within the distribution, it should look like this: 
 
-    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/grammars/xslt-embeded-xslq-conf.rng`
+    `jar:file:/path/to/xslt-quality-1.0.0-RC1-dist.zip!/xslt-quality-1.0.0-RC1-dist/grammars/xslt-embeded-xslq-conf.rng`
 
 1. Click OK (Three times)
 
@@ -248,34 +250,16 @@ Once this is done, you will be able to see any validation errors on xslt-quality
 
 ## How to install xslt-quality
 
+XSLT-Quality is distributed as a ZIP file.
+
 ### Downloading the distribution
+
+You can download the zip here: ... TODO
 
 
 ### Using Maven
 
-Later, I intend to make XSLT-quality available on Maven Central, then you should be able to load `xslt-quality.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
-[cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
+Later, I intend to make XSLT-quality available on Maven Central, then you should be able to load `xslt-quality.sch` as a maven dependency. 
 
-# TODO Release
-
-## 1.0.0-RC1
-
-- TU sur les schematron avec conf notamment
-- default conf : schéma spécifique car c'est différent (imbrication comme aliasdef mais infini)
-- ~~namespace + nom éléments : conf-override + conf-structure ? non tant pis~~
-- Packaging zip avec assembly (generate-source ok ?)
-  - https://xnopre.blogspot.com/2012/11/maven-generer-un-zip-contenant-un-autre.html
-  - https://stackoverflow.com/questions/7837778/maven-best-practice-for-creating-ad-hoc-zip-artifact
-- ~~update README : install oxygen zip + réglage completion + validation~~ 
-- voir si on peut mettre fichier de conf en paramètre dans oxy (ou conf à côté de la xsl ? bof)
-- Intégrer schematron quick fix de Joël
-- publication maven central et/ou ajouter release dans github ?
-
-## 1.0.0-RC2
-
-- TU xsl : pas obligé
-- ajouter ignore-role="info/warning/error"
-- Dependance vers xut pour résolution des includes - rendre xut plus parametrable
-- Dépendance xslLib (à publier sur mv central) : pas obligé
-- Renommer globalement les id, mettre xslq comme préfixe partout puis le nom de l'assert/report simple
-  - le nom du pattern pourra être ajouté en préfixe automatiquement au build [XSLQ][{pattern/@id}]
+A catalog.xml file could also be generated so you can use it in your code or in Oxygen using [cmarchand](https://github.com/cmarchand) [catalogBuilder-maven-plugin](https://mvnrepository.com/artifact/top.marchand.xml.maven/catalogBuilder-maven-plugin) and 
+[cp protocol](https://github.com/cmarchand/cp-protocol).
