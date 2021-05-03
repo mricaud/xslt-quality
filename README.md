@@ -4,18 +4,20 @@ XSLT Quality checks your XSLT to see if it adheres to good or best practices.
 
 [xslt-quality.sch](src/main/sch/xslt-quality.sch): the master Schematron file. This is the one (and only) Schematron file you need to point to. It has a number of submodules for groups of tests:
 
-- [xslt-quality.sch](src/main/sch/module/xslt-quality_mukulgandhi-rules.sch): Mukul Gandhi XSL QUALITY [rules](http://gandhimukul.tripod.com/xslt/xslquality.html)
-- [xslt-quality_common.sch](src/main/sch/module/xslt-quality_common.sch): a few common tests without specific category
-- [xslt-quality_documentation.sch](src/main/sch/module/xslt-quality_documentation.sch): tests on documentation
-- [xslt-quality_namespaces.sch](src/main/sch/module/xslt-quality_namespaces.sch): tests regarding namespaces
-- [xslt-quality_typing.sch](src/main/sch/module/xslt-quality_typing.sch): tests on variable / parameter types 
-- [xslt-quality_writing.sch](src/main/sch/module/xslt-quality_writing.sch): tests on writing
-- [xslt-quality_xslt-3.0.sch](src/main/sch/module/xslt-quality_xslt-3.0.sch): tests on specific XSLT 3.0 features
+- [xslt-quality.sch](src/main/sch/modules/xslt-quality_mukulgandhi-rules.sch): Mukul Gandhi XSL QUALITY [rules](http://gandhimukul.tripod.com/xslt/xslquality.html)
+- [xslt-quality_common.sch](src/main/sch/modules/xslt-quality_common.sch): a few common tests without specific category
+- [xslt-quality_documentation.sch](src/main/sch/modules/xslt-quality_documentation.sch): tests on documentation
+- [xslt-quality_namespaces.sch](src/main/sch/modules/xslt-quality_namespaces.sch): tests regarding namespaces
+- [xslt-quality_typing.sch](src/main/sch/modules/xslt-quality_typing.sch): tests on variable / parameter types 
+- [xslt-quality_writing.sch](src/main/sch/modules/xslt-quality_writing.sch): tests on writing
+- [xslt-quality_xslt-3.0.sch](src/main/sch/modules/xslt-quality_xslt-3.0.sch): tests on specific XSLT 3.0 features
 
 The modules listed above are subject to change in number, name, and contents, but the master Schematron file will not (from XSLT Quality 1.0.0)
 
 The Schematron suite depends upon an XSLT library whose master file is here: 
 [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl).
+
+> Beware : the links above point to the source code, but xslt-quality is a compiled project, please read the section "How to install xslt-quality" for more information.  
 
 ## License
 
@@ -41,6 +43,144 @@ XSLT Quality is using Schematron applied on any XSLT and generates errors, warni
 The main schematron imports [xslt-quality.xslt](src/main/xsl/xslt-quality.xsl) with `xsl:include` which is not a schematron element.
 The Schematron engine you are using must support this extension, typically by setting `allow-foreign` parameter to true.
 
+## Xslt-quality configuration 
+
+Not every XSLT programmer or organization has the same needs or styles. If you need more business specific rules, you can add your own schematron with Oxygen XSLT validation scenario. And if you find some common rules are missing in  xslt-quality, please open an issue here.
+
+Xslt-quality is also highly configurable, you can easily control and calibrate xslt-quality thanks to an XML configuration.
+
+### xslt-quality default conf file 
+
+Xslt-quality is using its default internal configuration file, there are multiple manner to override this file, see next sections.
+
+Let's see how this conf file works: it represents a hierarchic view of the architecture of [xslt-quality.sch](src/main/sch/xslt-quality.sch) with its pattern, rules, assertions and reports, with and `@idref` attribute  (pointing to the corresponding schematron element). An extra `@activate` attribute allows to deactivate any of these elements. This means deactivating the whole sub-elements. That's why it's important that elements are nested to exactly reflect the real schematron hierarchy.
+
+> Note : The internal xslt-quality default configuration file is not available from sources because it's generated. You can find the generated from source version within the distribution under `conf/xslt-quality.conf.xml`.
+
+Some parameters value might also be defined to refine some rules behaviour.
+
+Extract from this conf:
+
+```
+<conf xmlns="https://github.com/mricaud/xsl-quality">
+  <param name="xslqual-FunctionComplexity-maxSize">50</param>
+  <pattern idref="xslt-quality_writing" active="true"/>
+  <pattern idref="xslt-quality_namespaces" active="true"/>
+  <pattern idref="xslt-quality_mukulgandhi-rules" active="true">
+    <rule idref="xslqual-attributes" active="true">
+      <report idref="xslqual-UsingNameOrLocalNameFunction" active="true"/>
+      <report idref="xslqual-IncorrectUseOfBooleanConstants" active="true"/>
+    </rule>
+    <rule idref="xslqual-functions" active="true">
+      <assert idref="xslqual-UnusedFunction" active="true"/>
+      <assert idref="xslqual-UnusedParameter" active="true"/>
+      <report idref="xslqual-FunctionComplexity" active="true"/>
+    </rule>
+  </module>
+</conf>
+```
+
+### Override the default full conf
+
+Oxygen doesn't allow to send parameters to schematron, but if your schematron processor allows it, you can override the parameter `$xslq:conf.uri` to use another file. Be careful, this file has to be full (declare every xslt-quality components: asssert/report at least).
+
+### Overide conf at stylesheet level
+
+adding `{https://github.com/mricaud/xsl-quality}conf` as a 2nd-level element in the stylesheet to be tested, with children referencing any modules/pattern/rule/assert/report by `idref` to activate it or not. You can also override parameters value used in some component (use oxygen conf.rng completion to see all parameters)
+
+For example:
+
+```
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <conf xmlns="https://github.com/mricaud/xsl-quality">
+    <param name="xslqual-FunctionComplexity-maxSize">100</param>
+    <assert idref="xslqual-UnusedParameter" active="false"/>
+  </conf>
+
+  <xsl:template match="some-elements">
+    <!--do something-->
+  </xsl:template>
+  
+</xsl:stylesheet>
+```
+
+This conf doesn't need to be full neither nested as the default conf. It's a local conf aiming at overriding the defaut full conf file. You can deactivate any rules here, or change the value of a param.
+
+> Note : if you deactivate one level, its subcomponents will be deactivated as well according to the full conf hierarchy.
+
+#### Importing a shared conf
+
+If some of you XSLT shares the same conf settings, you can define it in a single file and import this file from your XSLT.
+
+For example:
+
+```
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <conf xmlns="https://github.com/mricaud/xsl-quality">
+    <include href="my-custom-conf.xml"/>
+    <!-- You can also add extra settings here -->   
+    <assert idref="xslqual-RedundantNamespaceDeclarations"/>
+  </conf>
+
+  <xsl:template match="some-elements">
+    <!--do something-->
+  </xsl:template>
+  
+</xsl:stylesheet>
+```
+
+With the following conf file next to your XSLT `my-custom-conf.xml`:
+
+```
+<conf xmlns="https://github.com/mricaud/xsl-quality">
+  <param name="xslqual-FunctionComplexity-maxSize">100</param>
+  <assert idref="xslqual-UnusedParameter" active="false"/>
+</conf>
+```
+
+> Conf files might be imported reccursively. When 2 settings rules are defined twice (or more), the last one value from the XSLT file is used, like CSS rules.
+
+### Defining and using aliases
+
+In any conf setting you can define aliases id so you can reference it later.
+
+```
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <conf xmlns="https://github.com/mricaud/xsl-quality">
+    <include href="my-alias-def.xml"/>
+    <!-- calling an custom alias to deactivate multiple rules at once -->   
+    <assert idref="my-alias-for-checking-namespace" active="false" />
+  </conf>
+
+  <xsl:template match="some-elements">
+    <!--do something-->
+  </xsl:template>
+  
+</xsl:stylesheet>
+```
+
+```
+<conf xmlns="https://github.com/mricaud/xsl-quality">
+  <aliasdef id="my-alias-for-checking-namespace">
+    <assert idref="xslt-quality_ns-global-statements-need-prefix"/>
+    <assert idref="xslqual-RedundantNamespaceDeclarations"/>
+  </aliasdef>  
+</conf>
+```
+
+### Override conf at stylesheet component level
+
+You can add an attribute `xslq:ignore` on any element of your stylesheet. The value is a list of schematron component id references (space separated values).
+
+For example:
+
+```
+<xsl:variable name="unused" as="xs:string" xslq:ignore="xslqual-UnusedVariable xslt-quality_use-select-attribute-when-possible">unused</xsl:variable>
+```
+
 ## Using XSLT Quality with Oxygen
 
 First make sure "*Allow foreign elements (allow-foreign)*" is activated here:
@@ -64,137 +204,74 @@ It's also possible to get any XSLT in Oxygen to be validated with XSLT quality w
 1. Click Add
 1. In the new entry click "XML Document" under File type.
 1. Double-click on the Schema column.
-1. Click Use custom schema, and use the URL bar to point to `xslt-quality.sch` within the jar, it should look like this: 
+1. Click `Use custom schema`, and use the URL bar to point to `xslt-quality.sch` within the distribution, it should look like this: 
 
-`jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/sch/xslt-quality.sch`
+    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/sch/xslt-quality.sch`
 
 1. Click OK (Three times)
 
-In this way, both Oxygen schematron and xslt-quality schematron will be applied to your XSLT. 
+In this way, both Oxygen default schematron and xslt-quality schematron are applied to your XSLT.
 
-## Configure xslt-quality
+### Configuration setting validation and completion with Oxygen
 
-Not every XSLT programmer or organization has the same needs or styles. If you need more business specific rules, you can add your own schematron with Oxygen XSLT validation scenario. And if you find some common rules are missing in  xslt-quality, please open an issue here.
+#### Conf completion
 
-Xslt-quality is also highly configurable, you can easily control and calibrate xslt-quality thanks to an XML configuration.
+This section describle how to allow Oxygen to suggest schema aware completion on xsl-quality conf fragment within your XSLT.
 
-### xslt-quality default conf file 
+1. Go to Options > Preferences > Editor > Content Completion > XSLT
+1. Check *Custom Schema* and fill in the field with:
 
-Xslt-quality is using its default configuration file at [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml), there are multiple manner to override this file, see next sections.
+    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/grammars/xslt-embeded-xslq-conf.rng`
 
-Let's see how this conf file works: it represents a hierarchic view of the architecture of [xslt-quality.sch](src/main/sch/xslt-quality.sch) with its modules (pattern), rules, assertions and reports, with and `@idref` attribute  (pointing to the corresponding schematron element). An extra `@activate` attribute allows to desactivate any of these elements. This means desactivating the whole sub-elements.
-That's why it's important that elements are nested to exactly reflect the real schematron hierarchy.
+Once this is done, you now have code completion from you XSLT for any elements or attribute. This is realy helpfull for `<param name="..."/>` or any other elements like `<pattern idref="...">`, `<rule idref="...">`, `<assert idref="...">` or `<report idref="...">`.
 
-> Note : this file might generated automatically
+> Note: `<aliases idref="..."/>` won't be listed in the content completion, cause it depends on you own aliases definition.
 
-Some parameters value might also be defined to refine some rules behaviour.
+#### Conf validation
 
-Extract from this conf:
+This section describe how to set the xslt-quality configuration fragment validation from within your XSLT.
 
-```
-<conf xmlns="https://github.com/mricaud/xsl-quality">
-  <param name="xslqual-FunctionComplexity-maxSize">50</param>
-  <module idref="xslt-quality_writing" active="true"/>
-  <module idref="xslt-quality_namespaces" active="false"/>
-  <module idref="xslt-quality_mukulgandhi-rules" active="true">
-    <rule idref="xslqual-attributes">
-      <report idref="xslqual-UsingNameOrLocalNameFunction"/>
-      <report idref="xslqual-IncorrectUseOfBooleanConstants"/>
-    </rule>
-    <rule idref="xslqual-functions">
-      <assert idref="xslqual-UnusedFunction" active="false"/>
-      <assert idref="xslqual-UnusedParameter"/>
-      <report idref="xslqual-FunctionComplexity">
-        <param name="maxSize" as="xs:integer">50</param>
-      </report>
-    </rule>
-  </module>
-</conf>
-```
+1. Go to Options > Preferences > Document type association
+1. Select "XSLT" and click Edit
+1. Go to "Validation" tab
+1. Double click on the single scenario "XSLT"
+1. Click Add
+1. In the new entry click "XML Document" under File type.
+1. Double-click on the Schema column.
+1. Click `Use custom schema`, and use the URL bar to point to `xslt-embeded-xslq-conf.rng` within the distribution, it should look like this: 
 
-> Note: you won't find this default conf within the source files, it is generated at build time so it takes part of xslt-quality jar distribution.
+    `jar:file:C:\path\to\xslt-quality-1.0.0-RC1.jar!/grammars/xslt-embeded-xslq-conf.rng`
 
-### Override the default full conf
+1. Click OK (Three times)
 
-Oxygen doesn't allow to send parameters to schematron, but if your schematron processor allows it, you can override the parameter `$xslq:conf.uri` to use another file. Be careful, this file has to be full (declare every xslt-quality components: asssert/report at least).
+Once this is done, you will be able to see any validation errors on xslt-quality configuration fragment from within your XSLT.
 
-### Overide conf at stylesheet level
+## How to install xslt-quality
 
-adding `{https://github.com/mricaud/xsl-quality}conf` as a 2nd-level element in the stylesheet to be tested, with children referencing any module/pattern/rule/assert/report by `idref` to activate it or not. An example:
+### Downloading the distribution
 
-```
-<conf xmlns="https://github.com/mricaud/xsl-quality" ignore-roles="info warning">
-  <param name="xslqual-FunctionComplexity-maxSize">100</param>
-  <assert idref="xslqual-UnusedParameter" active="false"/>
-</conf>
-```
 
-This conf doesn't need to be full neither nested a the default conf. It's a local conf aiming at overriding the full conf file at [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml). You can desactivate any rules here, or change the value of a param.
-
-> Note : the hierarchy impact the full conf : if you desactivate one level, every subcomponent will be desactivated as well.
-
-As you can see in the exemple you can also override parameters value used in some component (see [xslt-quality.conf.xml](src/main/conf/xslt-quality.conf.xml) to get them all)
-
-You may place that element anywhere in the stylesheet being tested, at the beginning, the end, or the middle, but it must be a child of the root element `xsl:transform` or `xsl:stylesheet`.
-
-### Override conf at stylesheet component level
-
-You can add an attribute `xslq:ignore` on any element of your stylesheet. The value is a list of schematron component id references.
-
-## MAVEN
+### Using Maven
 
 Later, I intend to make XSLT-quality available on Maven Central, then you should be able to load `xslt-quality.sch` (or any module) from a jar distribution with a catalog.xml, using "artefactId:/" as protocol and/or using the 
 [cp protocol](https://github.com/cmarchand/cp-protocol) by [cmarchand](https://github.com/cmarchand)
 
-## TODO
-
-- [#4](https://github.com/mricaud/xslt-quality/issues/4) Move rule "use-resolve-uri-in-loading-function" elsewhere cause it's too specific?
-- [#5](https://github.com/mricaud/xslt-quality/issues/5) Use [quickFix](http://www.schematron-quickfix.com/quickFix/guide.html) / diagnostic?
-- [#6](https://github.com/mricaud/xslt-quality/issues/6) Check for conventions: 
-    - https://google.github.io/styleguide/xmlstyle.html
-    - http://blog.xml.rocks/xslt-naming-conventions
-    - http://blog.xml.rocks/structuring-xslt-code
-- [#7](https://github.com/mricaud/xslt-quality/issues/7) xsl-qual : have a look at comments on http://markmail.org/message/y5cunpvfpy54wqe6
-- [#8](https://github.com/mricaud/xslt-quality/issues/8) Named template for generating XML elements VS functions to return atomic values as a good practice?
-- [#9](https://github.com/mricaud/xslt-quality/issues/9) Should the template ordering be watched by the schematron (copy template at the end, templates with @mode together, etc.)
-- [#10](https://github.com/mricaud/xslt-quality/issues/10) Unused templates, functions, global variables/parameters might not be an error (when the xsl is a library)
-- [#11](https://github.com/mricaud/xslt-quality/issues/11) Check that XSLT default templates are not used like:
-
-    ```xml 
-    <xsl:template match="/">
-      <xsl:apply-template>
-    </xsl:template>
-    ```
-
-- [#12](https://github.com/mricaud/xslt-quality/issues/12) Using `<xsl:value-of>` where `<xsl:sequence>` is enough
-- [#13](https://github.com/mricaud/xslt-quality/issues/13) Writing:
-
-   That means parsing the xsl as text here, something like:
-   
-    ```xml 
-    <sch:let name="xslt.txt" select="unparse-text(base-uri(/))"/>
-    ```
-   
-    - indent with spaces 
-    - No break line inside templates
-    - Space around operators ( =, +, > etc)
-
 # TODO Release
 
-## 1.0-RC1
+## 1.0.0-RC1
 
 - TU sur les schematron avec conf notamment
 - default conf : schéma spécifique car c'est différent (imbrication comme aliasdef mais infini)
-- namespace + nom éléments : conf-override + conf-structure ?
+- ~~namespace + nom éléments : conf-override + conf-structure ? non tant pis~~
 - Packaging zip avec assembly (generate-source ok ?)
   - https://xnopre.blogspot.com/2012/11/maven-generer-un-zip-contenant-un-autre.html
   - https://stackoverflow.com/questions/7837778/maven-best-practice-for-creating-ad-hoc-zip-artifact
-- update README : install oxygen zip + réglage completion + validation 
+- ~~update README : install oxygen zip + réglage completion + validation~~ 
 - voir si on peut mettre fichier de conf en paramètre dans oxy (ou conf à côté de la xsl ? bof)
 - Intégrer schematron quick fix de Joël
 - publication maven central et/ou ajouter release dans github ?
 
-## 1.0-RC2
+## 1.0.0-RC2
 
 - TU xsl : pas obligé
 - ajouter ignore-role="info/warning/error"

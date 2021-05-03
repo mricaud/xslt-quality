@@ -19,9 +19,10 @@
     <param name="xslqual-FunctionComplexity-maxSize">10</param>
     <pattern idref="xslt-quality_documentation" active="false"/>
     <pattern idref="xslt-quality_debug" active="true"/>
-    <rule idref="xslqual-UnusedFunction" active="false"/>
+    <assert idref="xslqual-UnusedFunction" active="false"/>
     <alias idref="check-namespace" active="false"/>
     <alias idref="unimportant-rules" active="false"/>
+    
   </conf>
   
   <xsl:import href="sample-lib.xsl"/>
@@ -46,7 +47,7 @@
   <xsl:function name="local:largeSizeFunction" as="item()*">
     <xsl:param name="s"/>
     <xsl:param name="e" as="element()*"/>
-    <xsl:variable name="unused" as="xs:string" xslq:ignore="xslt-quality_use-select-attribute-when-possible">unused</xsl:variable>
+    <xsl:variable name="unused" as="xs:string" xslq:ignore="xslqual-UnusedVariable xslt-quality_use-select-attribute-when-possible">unused</xsl:variable>
     <xsl:choose>
       <xsl:when test="count($e) = 1 and local-name($e) = 'e'">
         <xsl:analyze-string select="$s" regex="\s+">
