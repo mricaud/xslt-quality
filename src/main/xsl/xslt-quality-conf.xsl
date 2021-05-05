@@ -43,6 +43,7 @@
       <!--no need to pass xslq:conf-local as parameter, it's a global variable-->
     </xsl:document>
   </xsl:variable>
+  <xsl:variable name="inputDoc" select="/" as="document-node()"/>
   
   <xsl:key name="getConfElementByIdref" match="xslq:*" use="@idref"/>
   <xsl:key name="getConfParamByName" match="xslq:param" use="@name"/>
@@ -113,7 +114,7 @@
   <xd:doc>2 arity version of xslq:get-param-value</xd:doc>
   <xsl:function name="xslq:get-param-value" as="item()*">
     <xsl:param name="param-name" as="xs:string"/>
-    <xsl:param name="default-value" as="xs:string"/>
+    <xsl:param name="default-value" as="item()"/>
     <xsl:sequence select="xslq:get-param-value($param-name, $default-value, 'xs:string')"/>
   </xsl:function>
   
@@ -129,19 +130,32 @@
   </xd:doc>
   <xsl:function name="xslq:get-param-value" as="item()?">
     <xsl:param name="param-name" as="xs:string"/>
-    <xsl:param name="default-value" as="xs:string"/>
+    <xsl:param name="default-value" as="item()"/>
     <xsl:param name="cast-param-as" as="xs:string"/>
     <xsl:variable name="conf-param" as="element()?" select="(xslq:get-conf-param($param-name))[last()]"/>
-    <xsl:variable name="param-value" as="xs:string" select="($conf-param, $default-value)[1] => normalize-space()"/>
-    <xsl:try>
-      <xsl:evaluate xpath="$param-value ||  ' cast as ' || $cast-param-as"/>
-      <xsl:catch>
-        <xsl:variable as="xs:string" name="error-context" select="' [error ' || $err:code || ' at ' || $err:module || ' l. ' || $err:line-number || ' col. ' || $err:column-number || ']'"/>
-        <xsl:variable as="xs:string" name="error-desc" select="'[xslq:get-param-value] Unable to cast ' || $param-name || ' as ' || $cast-param-as  
-          || $err:description || $error-context"/>
-        <xsl:message terminate="yes" select="$error-desc"/>
-      </xsl:catch>
-    </xsl:try>
+    <xsl:choose>
+      <xsl:when test="exists($conf-param)">
+        <xsl:if test="$param-name = 'xslt-is-a-library'">
+          <xsl:message>xslt-is-a-library exist in conf</xsl:message>
+          <xsl:message>doc : <xsl:copy-of select="$inputDoc"/></xsl:message>
+        </xsl:if>
+        <xsl:try>
+          <xsl:evaluate xpath="$conf-param ||  ' cast as ' || $cast-param-as"/>
+          <xsl:catch>
+            <xsl:variable as="xs:string" name="error-context" select="' [error ' || $err:code || ' at ' || $err:module || ' l. ' || $err:line-number || ' col. ' || $err:column-number || ']'"/>
+            <xsl:variable as="xs:string" name="error-desc" select="'[xslq:get-param-value] Unable to cast ' || $param-name || ' as ' || $cast-param-as  
+              || $err:description || $error-context"/>
+            <xsl:message terminate="yes" select="$error-desc"/>
+          </xsl:catch>
+        </xsl:try>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="$param-name = 'xslt-is-a-library'">
+          <xsl:message>xslt-is-a-library OTW</xsl:message>
+        </xsl:if>
+        <xsl:sequence select="$default-value"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:function>
   
   <!--================================================-->

@@ -119,10 +119,20 @@
       <!--example: xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')-->
       <xsl:variable name="parameters" as="element(xslq:parameters)">
         <parameters>
-          <xsl:analyze-string select="." regex="xslq:get-param-value\(\s*'(.*?)',\s*'(.*?)'(\s*,\s*'(.*?)')?\)" flags="m">
+          <xsl:analyze-string select="." regex="xslq:get-param-value\(\s*'(.*?)',\s*(.*?)(\s*,\s*'(.*?)')?\)" flags="m">
             <xsl:matching-substring>
               <param name="{regex-group(1)}" as="{regex-group(4)}">
-                <xsl:value-of select="regex-group(2)"/>
+                <xsl:variable name="val" select="regex-group(2)" as="xs:string"/>
+                <xsl:variable name="reg">^'(.*?)$'</xsl:variable>
+                <xsl:choose>
+                  <xsl:when test="matches($val, $reg, 'm')">
+                    <xsl:value-of select="replace($val, $reg, '$1')"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:attribute name="xpath" select="'true'"/>
+                    <xsl:value-of select="$val"/>
+                  </xsl:otherwise>
+                </xsl:choose>
               </param>
             </xsl:matching-substring>
           </xsl:analyze-string>
@@ -131,7 +141,7 @@
       <!--In case the call to xslq:get-param-value appears several times in the same xpath expression-->
       <xsl:for-each select="$parameters/xslq:param">
         <xsl:if test="not(@name = preceding-sibling::xslq:param/@name)">
-          <param name="{@name}"><xsl:value-of select="."/></param>
+          <param name="{@name}" xpath="{@xpath}"><xsl:value-of select="."/></param>
         </xsl:if>
       </xsl:for-each>
     </xsl:if>

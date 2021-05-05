@@ -151,10 +151,10 @@
       <!--example: xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')-->
       <xsl:variable name="parameters" as="element(xslq:parameters)">
         <xslq:parameters>
-          <xsl:analyze-string select="." regex="xslq:get-param-value\(\s*'(.*?)',\s*'(.*?)'(\s*,\s*'(.*?)')?\)" flags="m">
+          <xsl:analyze-string select="." regex="xslq:get-param-value\(\s*'(.*?)',\s*(.*?)(\s*,\s*'(.*?)')?\)" flags="m">
             <xsl:matching-substring>
               <xslq:param name="{regex-group(1)}" as="{regex-group(4)}">
-                <xsl:value-of select="regex-group(2)"/>
+                <!--<xsl:value-of select="regex-group(2)"/> no it could be an xpath expression-->
               </xslq:param>
             </xsl:matching-substring>
           </xsl:analyze-string>
