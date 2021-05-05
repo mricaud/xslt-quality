@@ -5,7 +5,7 @@
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:saxon="http://saxon.sf.net/"
   queryBinding="xslt3" 
-  id="checkXSLTstyle.sch"
+  id="xslt-quality"
   >
   
   <xd:doc>
@@ -24,9 +24,14 @@
   
   <title>XSLT Quality Schematron</title>
   
-  
   <let name="NCNAME.reg" value="'[\i-[:]][\c-[:]]*'"/>
   <let name="xslt.version" value="/*/@version"/>
+  
+  <!-- FIXME : it's not possible to have a default xpath value for xslq parameters
+    <xsl:variable name="guess-xslt-is-a-library" select="count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) = 0" as="xs:boolean"/>-->
+  <!--<let name="xslt-is-a-library" value="xslq:get-param-value('xslt-is-a-library', $guess-xslt-is-a-library, 'xs:boolean')"/>-->
+  
+  <xsl:variable name="xslt-quality_xslt-is-a-library" select="xslq:get-param-value('xslt-quality_xslt-is-a-library', '0', 'xs:boolean')" as="item()?"/>
   
   <!--====================================-->
   <!--            DIAGNOSTICS             -->
@@ -48,6 +53,6 @@
   <include href="modules/xslt-quality_writing.sch"/>
   <include href="modules/xslt-quality_xslt-3.0.sch"/>
   
-  <!--A debugger (allow to see current xsltq conf for instance)-->
+  <!--A debugger (see current xsltq conf for instance)-->
   <include href="modules/xslt-quality_debug.sch"/>
 </schema>

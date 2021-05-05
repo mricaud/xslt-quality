@@ -94,7 +94,7 @@
       <define name="param.attr.name">
         <attribute name="name">
           <choice>
-            <xsl:apply-templates select="descendant::sch:*/@*" mode="xslq:generate-conf-rng-values-parameters"/>
+            <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-conf-rng-values-parameters"/>
           </choice>
         </attribute>
       </define>

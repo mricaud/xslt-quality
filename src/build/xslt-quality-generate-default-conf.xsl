@@ -86,7 +86,7 @@
   
   <xsl:template match="/sch:schema" mode="xslq:generate-default-conf" priority="1">
     <conf>
-      <xsl:apply-templates select="descendant::sch:*/@*" mode="xslq:generate-default-conf-parameters"/>
+      <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-default-conf-parameters"/>
       <xsl:apply-templates mode="#current"/>
     </conf>
   </xsl:template>
@@ -131,7 +131,11 @@
       <!--In case the call to xslq:get-param-value appears several times in the same xpath expression-->
       <xsl:for-each select="$parameters/xslq:param">
         <xsl:if test="not(@name = preceding-sibling::xslq:param/@name)">
-          <param name="{@name}"><xsl:value-of select="."/></param>
+          <param name="{@name}">
+            <!--FIXE : there's no need to generate param default value here, it's done dynamically while calling xslq:get-param-value()
+            but we need the param to be present in the default conf so it can be overriden-->
+            <!--<xsl:value-of select="."/>-->
+          </param>
         </xsl:if>
       </xsl:for-each>
     </xsl:if>

@@ -131,8 +131,8 @@
     <xsl:param name="param-name" as="xs:string"/>
     <xsl:param name="default-value" as="xs:string"/>
     <xsl:param name="cast-param-as" as="xs:string"/>
-    <xsl:variable name="conf-param" as="element()?" select="(xslq:get-conf-param($param-name))[last()]"/>
-    <xsl:variable name="param-value" as="xs:string" select="($conf-param, $default-value)[1] => normalize-space()"/>
+    <xsl:variable name="conf-param" as="xs:string?" select="(xslq:get-conf-param($param-name))[last()]/text()[normalize-space(.)]"/>
+    <xsl:variable name="param-value" as="xs:string" select="($conf-param, $default-value)[1]"/>
     <xsl:try>
       <xsl:evaluate xpath="$param-value ||  ' cast as ' || $cast-param-as"/>
       <xsl:catch>

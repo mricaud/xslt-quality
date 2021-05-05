@@ -30,7 +30,7 @@
     </report>
   </rule>
   
-  <rule context="xsl:template/@match | xsl:*/@select | xsl:when/@test">
+  <rule context="xsl:template/@match | xsl:*/@select | xsl:*/@test">
     <xd:doc>
       <xd:desc xml:lang="en">Using concatenation to resolve URI is not generic (windows and linux path are not the same) - Consider unsing the on-purpose resolve-uri() function instead</xd:desc>
       <xd:desc xml:lang="fr">la concaténation de chaînes de caractère pour résoudre une URI n'est pas générique (les chemins sous Windows et Linux ne sont pas les mêmes) - Considérez plutôt l'utilisation de la fonction dédiée resolve-uri()</xd:desc>

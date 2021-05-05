@@ -38,9 +38,10 @@
       <xd:desc xml:lang="en">Consider using too much template in the same XSLT make it difficult to read, maybe the code might be split in several modules.</xd:desc>
       <xd:desc xml:lang="fr">On considère qu'utiliser trop de template rend la XSLT difficile à lire, peut-être que le code devrait être découpé en modules</xd:desc>
     </xd:doc>
+    <let name="xslqual-TooManySmallTemplates-maxSmallTemplates" value="xslq:get-param-value('xslqual-TooManySmallTemplates-maxSmallTemplates', '10', 'xs:integer')"/>
     <report id="xslqual-TooManySmallTemplates" role="info"
-      test="count(//xsl:template[@match and not(@name)][count(*) &lt; 3]) &gt;= 10">
-      Too many low granular templates in the stylesheet (10 or more)
+      test="count(//xsl:template[@match and not(@name)][count(*) lt 3]) ge $xslqual-TooManySmallTemplates-maxSmallTemplates">
+      Too many low granular templates in the stylesheet (<value-of select="$xslqual-TooManySmallTemplates-maxSmallTemplates"/> or more)
     </report>
     
     <xd:doc>
@@ -58,17 +59,17 @@
     </xd:doc>
     <report id="xslqual-NotUsingSchemaTypes" role="info"
       test="(@version = ('2.0', '3.0')) and not(some $x in .//@* satisfies contains($x, 'xs:'))">
-      The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT <value-of select="@version"/> mode
+      The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT <value-of select="@version"/>
     </report>
   </rule>
   
   <rule context="xsl:output" id="xslqual_output">
     <xd:doc>
-      <xd:desc xml:lang="en">XSLT has the ability to produce a real HTML output serialisation: it will for instance not auto-unclose script tag making it works. It's really recommended to use this serialisation when generating HTML output.</xd:desc>
-      <xd:desc xml:lang="fr">XSLT permet de produire une vraie sérialisation HTML : cela va par exemple ne pas auto-fermer les balise script, ce qui les fera fonctionner. Il est vivement recommandé d'utiliser cette sérialisation quand vous générez du HTML.</xd:desc>
+      <xd:desc xml:lang="en">XSLT has the ability to produce a real HTML output serialisation: it will for instance not auto-unclose script tag making it works in the browser. It's really recommended to use this serialisation when generating HTML output.</xd:desc>
+      <xd:desc xml:lang="fr">XSLT permet de produire une vraie sérialisation HTML : cela va par exemple ne pas auto-fermer les balise script, ce qui les fera fonctionner dans le navigateur. Il est vivement recommandé d'utiliser cette sérialisation quand vous générez du HTML.</xd:desc>
     </xd:doc>
     <report id="xslqual-OutputMethodXml"
-      test="(@method = 'xml') and starts-with(//xsl:template[.//html or .//HTML]/@match, '/')">
+      test="(@method = 'xml') and starts-with(//xsl:template[.//*:html or .//*:HTML]/@match, '/')">
       Using the output method 'xml' when generating HTML code
     </report>
   </rule>
@@ -88,10 +89,10 @@
       <xd:desc xml:lang="en">Is it really usefull to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
-    <assert id="xslqual-UnusedVariable" role="warning" 
-      test="xslq:var-or-param-is-referenced-within-its-scope(.)">
+    <report id="xslqual-UnusedVariable" role="warning" 
+      test="not($xslt-quality_xslt-is-a-library) and not(xslq:var-or-param-is-referenced-within-its-scope(.))">
       Variable $<value-of select="@name"/> is unused within its scope
-    </assert>
+    </report>
     
   </rule>
   
@@ -110,10 +111,10 @@
       <xd:desc xml:lang="en">Is it really usefull to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
-    <assert id="xslqual-UnusedParameter" role="warning"
-      test="xslq:var-or-param-is-referenced-within-its-scope(.)">
+    <report id="xslqual-UnusedParameter" role="warning"
+      test="not($xslt-quality_xslt-is-a-library) and not(xslq:var-or-param-is-referenced-within-its-scope(.))">
       Parameter $<value-of select="@name"/> is unused within its scope
-    </assert>
+    </report>
     
   </rule>
   
@@ -128,27 +129,25 @@
     </report>
   </rule>
   
-  <rule context="xsl:function[(:ignore function library stylesheet:)
-    count(//xsl:template[@match][(@mode, '#default')[1] = '#default']) != 0]"
-    id="xslqual-functions">
+  <rule context="xsl:function" id="xslqual-functions">
     
     <xd:doc>
       <xd:desc xml:lang="en">Unless the XSLT is a function library (which look not to be the case here), declaring a function which is never used in the stylesheet is unusefull</xd:desc>
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer une fonction sans l'utiliser est inutile</xd:desc>
     </xd:doc>
-    <assert id="xslqual-UnusedFunction" role="warning"
-      test="xslq:function-is-called-within-its-scope(.)">
+    <report id="xslqual-UnusedFunction" role="warning"
+      test="not($xslt-quality_xslt-is-a-library) and not(xslq:function-is-called-within-its-scope(.))">
       Function <value-of select="@name"/> is unused in the stylesheet
-    </assert>
+    </report>
     
     <xd:doc>
       <xd:desc xml:lang="en">When a function is too big maybe it's good to wonder if one could split it</xd:desc>
       <xd:desc xml:lang="fr">Quand une fonction est trop longue, peut-être que l'on peut s'interroger sur un autre découpage</xd:desc>
     </xd:doc>
-    <let name="maxSize" value="xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')"/>
+    <let name="xslqual-FunctionComplexity-maxSize" value="xslq:get-param-value('xslqual-FunctionComplexity-maxSize', '50', 'xs:integer')"/>
     <report id="xslqual-FunctionComplexity" role="info"
-      test="count(.//xsl:*) gt $maxSize">
-      Function's size/complexity is high (<value-of select="$maxSize"/> elements). There is need for refactoring the code.
+      test="count(.//xsl:*) gt $xslqual-FunctionComplexity-maxSize">
+      Function's size/complexity is high (more than <value-of select="$xslqual-FunctionComplexity-maxSize"/> elements). There is need for refactoring the code.
     </report>
   </rule>
   
@@ -159,17 +158,18 @@
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer un template nommé sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedNamedTemplate" role="warning"
-      test="@name and not(@match) and not(//xsl:call-template/@name = @name)">
-      Named template in unused the stylesheet
+      test="not($xslt-quality_xslt-is-a-library) and (@name and not(@match)) and not(//xsl:call-template/@name = @name)">
+      Named template "<value-of select="@name"/>" is unused in the stylesheet
     </report>
     
     <xd:doc>
       <xd:desc xml:lang="en">When a named template is too big maybe it's good to wonder if one could split it</xd:desc>
       <xd:desc xml:lang="fr">Quand un template nommé est trop long, peut-être que l'on peut s'interroger sur un autre découpage</xd:desc>
     </xd:doc>
+    <let name="xslqual-TemplateComplexity-maxSize" value="xslq:get-param-value('xslqual-TemplateComplexity-maxSize', '50', 'xs:integer')"/>
     <report id="xslqual-TemplateComplexity" role="info"
-      test="count(.//xsl:*) &gt; 50">
-      Template's size/complexity is high. There is need for refactoring the code.
+      test="count(.//xsl:*) gt $xslqual-TemplateComplexity-maxSize">
+      Template's size/complexity is high (more than <value-of select="$xslqual-TemplateComplexity-maxSize"/>). There is need for refactoring the code.
     </report>
   </rule>
   
@@ -244,7 +244,7 @@
     </xd:doc>
     <report id="xslqual-UsingNamespaceAxis" 
       test="/xsl:stylesheet/@version = ('2.0', '3.0') and local-name(.)= ('match', 'select') and contains(., 'namespace::')">
-      Using the deprecated namespace axis, when working in XSLT <value-of select="/*/@version"/> mode
+      Using the deprecated namespace axis, when working in XSLT <value-of select="/*/@version"/>
     </report>
     
     <xd:doc>
