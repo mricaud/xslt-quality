@@ -3,6 +3,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+  xmlns:sqf="http://www.schematron-quickfix.com/validator/process"
   xml:lang="en"
   id="xslt-quality_typing">
   
@@ -19,9 +20,33 @@
     </xd:doc>
     <report id="xslt-quality_typing-with-as-attribute"
       test="$xslt.version = ('2.0', '3.0') and not(@as)"
-      diagnostics="addType">
+      sqf:fix="sqf_add-empty-as-attribute sqf_add-xsString-as-attribute">
       <name/> is not typed
     </report>
   </rule>
+  
+  <sqf:fixes>
+    <sqf:fix id="sqf_add-empty-as-attribute">
+      <sqf:description>
+        <sqf:title xml:lang="en">Add "as" attribute</sqf:title>
+        <!--<sqf:title xml:lang="fr">Ajouter un attribut "as"</sqf:title>-->
+      </sqf:description>
+      <sqf:user-entry name="type">
+        <sqf:description>
+          <sqf:title>Enter a type for "as" attribute:</sqf:title>
+        </sqf:description>
+      </sqf:user-entry>
+      <sqf:add match="." target="as" node-type="attribute">
+        <value-of select="$type"/>
+      </sqf:add>
+    </sqf:fix>
+    <sqf:fix id="sqf_add-xsString-as-attribute">
+      <sqf:description>
+        <sqf:title xml:lang="en">Add "as" attribute with value "xs:string"</sqf:title>
+        <!--<sqf:title xml:lang="fr">Ajouter un attribut "as"</sqf:title>-->
+      </sqf:description>
+      <sqf:add match="." target="as" node-type="attribute">xs:string</sqf:add>
+    </sqf:fix>
+  </sqf:fixes>
   
 </pattern>

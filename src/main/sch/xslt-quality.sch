@@ -34,14 +34,6 @@
   <xsl:variable name="xslt-quality_xslt-is-a-library" select="xslq:get-param-value('xslt-quality_xslt-is-a-library', '0', 'xs:boolean')" as="item()?"/>
   
   <!--====================================-->
-  <!--            DIAGNOSTICS             -->
-  <!--====================================-->
-  
-  <diagnostics>
-    <diagnostic id="addType">Add @as attribute</diagnostic>
-  </diagnostics>
-  
-  <!--====================================-->
   <!--           INCLUSIONS               -->
   <!--====================================-->
   
