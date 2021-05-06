@@ -21,7 +21,7 @@
     </xd:desc>
   </xd:doc>
   
-  <rule context="xsl:stylesheet" id="xslqual_stylesheet">
+  <rule context="xsl:stylesheet | xsl:transform" id="xslqual_stylesheet">
     
     <xd:doc>
       <xd:desc xml:lang="en">Deleting unused prefix declarations will make XSLT lighter and easier to read.</xd:desc>
@@ -79,7 +79,16 @@
     </report>
   </rule>
   
-  <rule context="xsl:variable" id="xslqual_variable">
+  <rule context="/xsl:*/xsl:param | /xsl:*/xsl:variable" id="xslqual_global-variable-parameter">
+    <xd:doc>
+      <xd:desc xml:lang="en">Check to see if global parameters and variables are really used.</xd:desc>
+    </xd:doc>
+    <assert id="xslqual-UnusedGlobalVariableOrParameter" role="warning"
+      test="xslq:var-or-param-is-referenced-within-its-scope(., $xslq:self.resolved)">
+      Global <value-of select="local-name(.)"/> $<value-of select="@name"/> is unused by the file or its inclusions. </assert>
+  </rule>
+  
+  <rule context="xsl:*/xsl:*/xsl:variable" id="xslqual_variable">
     
     <xd:doc>
       <xd:desc xml:lang="en">XSLT doesn't need to be more verbose than it is. Using xsl:value-of has a really special meaning, it make flat string from a tree, which cost a few operations for the processor. Don't use it if you don't need it.</xd:desc>
@@ -101,7 +110,7 @@
     
   </rule>
   
-  <rule context="xsl:param" id="xslqual_param">
+  <rule context="xsl:*/xsl:*/xsl:param" id="xslqual_param">
     
     <xd:doc>
       <xd:desc xml:lang="en">XSLT doesn't need to be more verbose than it is. Using xsl:value-of has a really special meaning, it make flat string from a tree, which cost a few operations for the processor. Don't use it if you don't need it.</xd:desc>
@@ -141,7 +150,7 @@
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer une fonction sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedFunction" role="warning"
-      test="not($xslt-quality_xslt-is-a-library) and not(xslq:function-is-called-within-its-scope(.))">
+      test="not($xslt-quality_xslt-is-a-library) and not(xslq:function-is-called-within-its-scope(., $xslq:self.resolved))">
       Function <value-of select="@name"/> is unused in the stylesheet
     </report>
     
@@ -163,7 +172,7 @@
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer un template nommé sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedNamedTemplate" role="warning"
-      test="not($xslt-quality_xslt-is-a-library) and (@name and not(@match)) and not(//xsl:call-template/@name = @name)">
+      test="not($xslt-quality_xslt-is-a-library) and (@name and not(@match)) and not($xslq:self.resolved//xsl:call-template/@name = @name)">
       Named template "<value-of select="@name"/>" is unused in the stylesheet
     </report>
     
