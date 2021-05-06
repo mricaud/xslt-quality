@@ -9,7 +9,7 @@
   
   <xd:doc>
     <xd:desc>
-      <xd:p>These rules are about namespaces usage in XSLT</xd:p>
+      <xd:p>These rules are about namespace usage in XSLT</xd:p>
     </xd:desc>
   </xd:doc>
   

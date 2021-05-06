@@ -17,7 +17,6 @@
   <conf xmlns="https://github.com/mricaud/xsl-quality">
     <param name="xslt-quality_xslt-is-a-library">1</param>
     <pattern idref="xslt-quality_debug" active="false"/>
-    <pattern idref="xslt-quality_documentation" active="false"/>
   </conf>
   
   <xsl:param name="local:unused-param" select="'test'" as="xs:string"/>

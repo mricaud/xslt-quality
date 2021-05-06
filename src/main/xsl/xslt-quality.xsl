@@ -106,7 +106,7 @@
    
   <xd:doc>
     <xd:desc>
-      <xd:p>Get every attributes which allow xpath value in XSLT</xd:p>
+      <xd:p>Get every XSLT attribute that allows XPath values</xd:p>
     </xd:desc>
     <xd:param name="scope">XSLT fragment where to apply the function</xd:param>
     <xd:return>sequence of xsl attributes with xpath inside</xd:return>
@@ -195,5 +195,75 @@
       <xsl:variable name="ns" select="if ($prefix != '') then (namespace-uri-for-prefix($prefix, $context)) else ('')" as="xs:string"/>
       <xsl:value-of select="'Q{' || $ns, '}' || $local-name" separator=""/>
    </xsl:function>
-   
+  
+  <!--=============================================================-->
+  <!--get-namespace-prefixes-->
+  <!--=============================================================-->
+  
+  <xd:doc>
+    <xd:desc>Retrieves all active prefixes used in a given element and its descendants.</xd:desc>
+  </xd:doc>
+  <xsl:function name="xslq:get-namespace-prefixes" as="xs:string*">
+    <xsl:param name="element-to-check" as="element()?"/>
+    <xsl:variable name="all-prefixes" as="xs:string*">
+      <xsl:apply-templates select="$element-to-check" mode="xslq:get-namespace-prefixes"/>
+    </xsl:variable>
+    <xsl:sequence select="distinct-values($all-prefixes)"/>
+  </xsl:function>
+  
+  <xsl:template match="* | @*" mode="xslq:get-namespace-prefixes">
+    <xsl:analyze-string select="name(.)" regex="^({$xslq:NCNAME.reg}):">
+      <xsl:matching-substring>
+        <xsl:value-of select="regex-group(1)"/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+    <xsl:apply-templates select="node() | @*" mode="#current"/>
+  </xsl:template>
+  
+  <xsl:template match="xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode" mode="xslq:get-namespace-prefixes">
+    <xsl:analyze-string select="." regex="^({$xslq:NCNAME.reg}):">
+      <xsl:matching-substring>
+        <xsl:value-of select="regex-group(1)"/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+  </xsl:template>
+  
+  <xsl:template match="text()" mode="xslq:get-namespace-prefixes"/>
+
+  <!--=============================================================-->
+  <!--plural-form-->
+  <!--=============================================================-->
+  
+  <xd:doc>
+    <xd:desc>See full xslq:plural-form(), 3-arity version</xd:desc>
+    <xd:param name="count">See full xslq:plural-form(), 3-arity version</xd:param>
+    <xd:param name="form-if-plural">See full xslq:plural-form(), 3-arity version</xd:param>
+  </xd:doc>
+  <xsl:function name="xslq:plural-form" as="xs:string?">
+    <xsl:param name="count" as="xs:integer"/>
+    <xsl:param name="form-if-plural" as="xs:string?"/>
+    <xsl:if test="$count gt 1">
+      <xsl:sequence select="xslq:plural-form($count, $form-if-plural, ())"/>
+    </xsl:if>
+  </xsl:function>
+  
+  <xd:doc>
+    <xd:desc>Returns a possible plural form, if the count is greater than one.</xd:desc>
+    <xd:param name="count">The number of items in question.</xd:param>
+    <xd:param name="form-if-plural">The form of the suffix that should be returned.</xd:param>
+    <xd:param name="form-if-singular">The form of the suffix that should be returned.</xd:param>
+  </xd:doc>
+  <xsl:function name="xslq:plural-form" as="xs:string?">
+    <xsl:param name="count" as="xs:integer"/>
+    <xsl:param name="form-if-plural" as="xs:string?"/>
+    <xsl:param name="form-if-singular" as="xs:string?"/>
+    <xsl:choose>
+      <xsl:when test="$count gt 1">
+        <xsl:sequence select="$form-if-plural"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="$form-if-singular"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 </xsl:stylesheet>

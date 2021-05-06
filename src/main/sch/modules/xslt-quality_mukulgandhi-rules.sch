@@ -24,19 +24,24 @@
   <rule context="xsl:stylesheet" id="xslqual_stylesheet">
     
     <xd:doc>
-      <xd:desc xml:lang="en">Consider it's not usefull to keep unused prefix declaration. Delete them will make the xslt lighter and easier to read.</xd:desc>
-      <xd:desc xml:lang="fr">On considère qu'il n'est pas nécessaire de conserver les déclarations de préfixe qui ne sont pas utilisé. Les supprimer rendra la XSLT moins lourde et plus lisible.</xd:desc>
+      <xd:desc xml:lang="en">Deleting unused prefix declarations will make XSLT lighter and easier to read.</xd:desc>
+      <xd:desc xml:lang="fr">Supprimer les déclarations de préfixe non-utilisées rendra la XSLT moins lourde et plus lisible.</xd:desc>
     </xd:doc>
-    <assert id="xslqual-RedundantNamespaceDeclarations" role="warning"
-      test="every $s in in-scope-prefixes(.)[not(. = ('xml', ''))] satisfies 
-      exists(//(*[not(self::xsl:stylesheet)] | @*[not(parent::xsl:*)] | xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode)
-      [starts-with(name(), concat($s, ':')) or starts-with(., concat($s, ':'))])">
-      There are namespace prefixes that are declared in the xsl:stylesheet element but never used anywhere 
-    </assert>
+    <let name="declared-prefixes" value="in-scope-prefixes(.)[not(. = ('xml', ''))]"/>
+    <let name="all-prefixes" value="xslq:get-namespace-prefixes(.)"/>
+    <let name="unused-prefixes" value="$declared-prefixes[not(. = $all-prefixes)]"/>
+    <let name="count-unused-prefixes" value="count($unused-prefixes)"/>
+    <report id="xslqual-RedundantNamespaceDeclarations" role="warning"
+      test="exists($unused-prefixes)">
+      <value-of select="$count-unused-prefixes"/> namespace 
+      <value-of select="'prefix' || xslq:plural-form($count-unused-prefixes, 'es')"/> 
+      <value-of select="xslq:plural-form($count-unused-prefixes, 'are', 'is')"/> 
+      declared but are used nowhere: <value-of select="string-join($unused-prefixes, ', ')"/>
+    </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Consider using too much template in the same XSLT make it difficult to read, maybe the code might be split in several modules.</xd:desc>
-      <xd:desc xml:lang="fr">On considère qu'utiliser trop de template rend la XSLT difficile à lire, peut-être que le code devrait être découpé en modules</xd:desc>
+      <xd:desc xml:lang="en">Too many templates are difficult to read. Maybe the code should be split in several modules.</xd:desc>
+      <xd:desc xml:lang="fr">Trop de templates rend la XSLT difficile à lire, peut-être que le code devrait être découpé en modules</xd:desc>
     </xd:doc>
     <let name="xslqual-TooManySmallTemplates-maxSmallTemplates" value="xslq:get-param-value('xslqual-TooManySmallTemplates-maxSmallTemplates', '10', 'xs:integer')"/>
     <report id="xslqual-TooManySmallTemplates" role="info"
@@ -49,17 +54,17 @@
       <xd:desc xml:lang="fr">N'avoir qu'un seul template (ou fonction) dans une XSL est suspect. Si elle ne contient qu'un template avec des xsl:for-each à l'intérieur, alors ça peut être signe d'une XSL non-déclarative ce qui n'es pas recommandé</xd:desc>
     </xd:doc>
     <report id="xslqual-MonolithicDesign" role="warning"
-      test="count(//xsl:template | //xsl:function) = 1">
-      Using a single template/function in the stylesheet. You can modularize the code.
+      test="count(xsl:template | xsl:function) = 1">
+      Using a single template/function in the stylesheet. Perhaps you can convert a singular template or function into a declarative structure.
     </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Not declarating the xs prefix probably mean you will probably not be typing your code (variable, param, functions, etc.)</xd:desc>
-      <xd:desc xml:lang="fr">Ne pas déclarer le préfixe xs signifie que vous n'allez probablement pas typé votre code (variable, paramètre, fonctions, etc.)</xd:desc>
+      <xd:desc xml:lang="en">You should declare the 'xs' prefix to data-type your code (variable, param, functions, etc.)</xd:desc>
+      <xd:desc xml:lang="fr">Vous devriez le préfixe 'xs' pour pouvoir typer votre code (variable, paramètre, fonctions, etc.)</xd:desc>
     </xd:doc>
     <report id="xslqual-NotUsingSchemaTypes" role="info"
       test="(@version = ('2.0', '3.0')) and not(some $x in .//@* satisfies contains($x, 'xs:'))">
-      The stylesheet is not using any of the built-in Schema types (xs:string etc.), when working in XSLT <value-of select="@version"/>
+      The stylesheet is not using a built-in Schema types (xs:string, etc.) for XSLT <value-of select="@version"/>
     </report>
   </rule>
   
@@ -86,7 +91,7 @@
     </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Is it really usefull to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
+      <xd:desc xml:lang="en">Is it really useful to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedVariable" role="warning" 
@@ -108,7 +113,7 @@
     </report>
     
     <xd:doc>
-      <xd:desc xml:lang="en">Is it really usefull to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
+      <xd:desc xml:lang="en">Is it really useful to declare a variable if you don't use it? Sometime yes because it will be used out of the current scope, but sometimes it's just a forgotten line.</xd:desc>
       <xd:desc xml:lang="fr">Est-il vraiment utile de déclarer une variable sans jamais l'utiliser ? Parfois oui, car elles sera utilisé en dehors de son contexte, mais d'autres fois c'est juste un oubli.</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedParameter" role="warning"
@@ -132,7 +137,7 @@
   <rule context="xsl:function" id="xslqual-functions">
     
     <xd:doc>
-      <xd:desc xml:lang="en">Unless the XSLT is a function library (which look not to be the case here), declaring a function which is never used in the stylesheet is unusefull</xd:desc>
+      <xd:desc xml:lang="en">Unless the XSLT is a function library (which look not to be the case here), declaring a function which is never used in the stylesheet is unuseful</xd:desc>
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer une fonction sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedFunction" role="warning"
@@ -154,7 +159,7 @@
   <rule context="xsl:template" id="xslqual-template">
     
     <xd:doc>
-      <xd:desc xml:lang="en">Unless the XSLT is a function library (which look not to be the case here), declaring a named template which is never used in the stylesheet is unusefull</xd:desc>
+      <xd:desc xml:lang="en">Unless the XSLT is a function library (which look not to be the case here), declaring a named template which is never used in the stylesheet is unuseful</xd:desc>
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer un template nommé sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedNamedTemplate" role="warning"

@@ -8,7 +8,6 @@
   xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xmlns:unused="unused"
   xmlns:local="local"
-  xmlns:local2="local2"
   xmlns="http://www.w3.org/1999/xhtml"
   xpath-default-namespace=""
   exclude-result-prefixes="#all"
@@ -22,7 +21,7 @@
     <pattern idref="xslt-quality_documentation" active="false"/>
     <pattern idref="xslt-quality_debug" active="true"/>
     <report idref="xslqual-UnusedFunction" active="false"/>
-    <alias idref="check-namespace" active="false"/>
+    <alias idref="check-namespace" active="true"/>
     <alias idref="unimportant-rules" active="false"/>
   </conf>
   
