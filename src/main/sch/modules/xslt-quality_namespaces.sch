@@ -3,7 +3,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:saxon="http://saxon.sf.net/" 
+  xmlns:xslq="https://github.com/mricaud/xsl-quality"
   xml:lang="en"
   id="xslt-quality_namespaces">
   
@@ -20,9 +20,9 @@
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos variables et paramètres globaux rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
     <assert id="xslt-quality_ns-global-statements-need-prefix"
-      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))" 
+      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $xslq:NCNAME.reg, ':'))" 
       role="warning">
-      <value-of select="local-name(parent::*)"/> <name/>="<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+      <value-of select="local-name(parent::*)"/> <name/>="<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $xslq:NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>
   
@@ -33,9 +33,9 @@
       <xd:desc xml:lang="fr">Ajouter un préfixe de namespace sur vos mode de template rendra votre XSLT plus portable : cela évitera les conflit de nommage avec d'autres XSLT qui importerait la votre et vice versa</xd:desc>
     </xd:doc>
     <assert id="xslt-quality_ns-mode-statements-need-prefix"
-      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $NCNAME.reg, ':'))"
+      test="every $name in tokenize(., '\s+') satisfies matches($name, concat('^', $xslq:NCNAME.reg, ':'))"
       role="warning">
-      <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
+      <value-of select="local-name(parent::*)"/> @<name/> value "<value-of select="tokenize(., '\s+')[not(matches(., concat('^', $xslq:NCNAME.reg, ':')))]"/>" should be namespaces prefixed, so they don't generate conflict with imported XSLT (or when this xslt is imported)
     </assert>
   </rule>
   

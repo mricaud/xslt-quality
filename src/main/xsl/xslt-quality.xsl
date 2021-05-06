@@ -11,7 +11,16 @@
     </xd:desc>
   </xd:doc>
   
+  <conf xmlns="https://github.com/mricaud/xsl-quality">
+    <param name="xslt-quality_xslt-is-a-library">1</param>
+    <item idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
+    <item idref="xslqual-IncorrectUseOfBooleanConstants" active="false"/>
+  </conf>
+  
   <xsl:import href="xslt-quality-conf.xsl"/>
+  
+  <xsl:variable name="xslq:NCNAME.reg" as="xs:string" select="'[\i-[:]][\c-[:]]*'"/>
+  <xsl:variable name="xslq:QName.reg" as="xs:string" select="'(' || $xslq:NCNAME.reg || ':)?' || $xslq:NCNAME.reg"/>
   
   <xd:doc>
     <xd:desc>
@@ -49,11 +58,9 @@
    <xsl:function name="xslq:get-xslt-xpath-var-or-param-call-with-expanded-prefix" as="xs:string*">
       <xsl:param name="scope" as="element()"/>
       <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames--> 
-      <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-      <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
       <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
          <xsl:variable name="context" select="parent::*" as="element()"/>
-         <xsl:analyze-string select="." regex="{'\$(' || $QName.reg || ')'}">
+         <xsl:analyze-string select="." regex="{'\$(' || $xslq:QName.reg || ')'}">
             <xsl:matching-substring>
                <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
             </xsl:matching-substring>
@@ -62,7 +69,7 @@
       <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
          <xsl:variable name="context" select="parent::*" as="element()"/>
          <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
-            <xsl:analyze-string select="." regex="{'\$(' || $QName.reg || ')'}">
+            <xsl:analyze-string select="." regex="{'\$(' || $xslq:QName.reg || ')'}">
                <xsl:matching-substring>
                   <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
                </xsl:matching-substring>
@@ -82,11 +89,11 @@
       <xsl:param name="scope" as="element()"/>
       <!--prefix and local-name are NCname cf. https://www.w3.org/TR/REC-xml-names/#ns-qualnames-->
       <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-      <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
+      <xsl:variable name="QName.reg" select="'(' || $xslq:NCNAME.reg || ':)?' || $xslq:NCNAME.reg" as="xs:string"/>
       <xsl:for-each select="xslq:get-xslt-xpath-evaluated-attributes($scope)">
          <xsl:variable name="context" select="parent::*" as="element()"/>
          <!--don't catch the closing parenthesis in the function call because it would hide nested functions call-->
-         <xsl:analyze-string select="." regex="{'(' || $QName.reg || ')' || '\('}">
+         <xsl:analyze-string select="." regex="{'(' || $xslq:QName.reg || ')' || '\('}">
             <xsl:matching-substring>
                <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
             </xsl:matching-substring>
@@ -95,7 +102,7 @@
       <xsl:for-each select="xslq:get-xslt-xpath-value-template-nodes($scope)">
          <xsl:variable name="context" select="parent::*" as="element()"/>
          <xsl:for-each select="xslq:extract-xpath-from-value-template(.)">
-            <xsl:analyze-string select="." regex="{'(' || $QName.reg || ')' || '\('}">
+            <xsl:analyze-string select="." regex="{'(' || $xslq:QName.reg || ')' || '\('}">
                <xsl:matching-substring>
                   <xsl:sequence select="xslq:expand-prefix(regex-group(1), $context)"/>
                </xsl:matching-substring>
@@ -131,7 +138,7 @@
          xsl:sequence/@select | xsl:sort/@select | xsl:template/@match | xsl:try/@select | 
          xsl:value-of/@select | xsl:variable/@select | xsl:when/@test | xsl:with-param/@select
          )
-         "/>
+         " xslq:ignore="xslqual-DontUseDoubleSlashOperator"/>
    </xsl:function>
    
   <xd:doc>
@@ -152,12 +159,12 @@
          [not(ancestor::xsl:*[1] is /*)](:ignore text outside templates or function (e.g. text within 'xd:doc'):)
          [normalize-space(.)](:ignore white-space nodes:)
          [ancestor-or-self::*[@expand-text[parent::xsl:*] | @xsl:expand-text][1]/@*[local-name() = 'expand-text'] = ('1', 'true', 'yes')]
-         "/>
+         " xslq:ignore="xslqual-DontUseDoubleSlashOperator"/>
    </xsl:function>
    
   <xd:doc>
     <xd:desc>
-      <xd:p>Given a text node (as a string) which contains TVT, this function extract each of TVT xpath values</xd:p>
+      <xd:p>Given a text node (as a string) which contains TVT (Text Value Template), this function extracts each of TVT xpath values</xd:p>
     </xd:desc>
     <xd:param name="string">String of the XSLT text node</xd:param>
     <xd:return>Sequence of xpath values strings</xd:return>
@@ -186,8 +193,8 @@
       <!--NCName = an XML Name, minus the ":"-->
       <!--cf. https://stackoverflow.com/questions/1631396/what-is-an-xsncname-type-and-when-should-it-be-used-->
       <xsl:variable name="NCNAME.reg" select="'[\i-[:]][\c-[:]]*'" as="xs:string"/>
-      <xsl:variable name="QName.reg" select="'(' || $NCNAME.reg || ':)?' || $NCNAME.reg" as="xs:string"/>
-      <xsl:assert test="matches($QNameString, '^' || $QName.reg)"/>
+      <xsl:variable name="QName.reg" select="'(' || $xslq:NCNAME.reg || ':)?' || $xslq:NCNAME.reg" as="xs:string"/>
+      <xsl:assert test="matches($QNameString, '^' || $xslq:QName.reg)"/>
       <!--<xsl:variable name="prefix" select="xs:string(prefix-from-QName(xs:QName(@name)))" as="xs:string"/>-->
       <xsl:variable name="prefix" select="substring-before($QNameString, ':')" as="xs:string"/>
       <!--<xsl:variable name="local-name" select="local-name-from-QName(xs:QName(@name))" as="xs:string"/>-->
@@ -266,4 +273,5 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
+  
 </xsl:stylesheet>

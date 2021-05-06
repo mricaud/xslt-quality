@@ -21,10 +21,10 @@
   <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
   <ns prefix="xd" uri="http://www.oxygenxml.com/ns/doc/xsl"/>
   <ns prefix="xslq" uri="https://github.com/mricaud/xsl-quality"/>
+  <ns prefix="sqf" uri="http://www.schematron-quickfix.com/validator/process"/>
   
   <title>XSLT Quality Schematron</title>
   
-  <let name="NCNAME.reg" value="'[\i-[:]][\c-[:]]*'"/>
   <let name="xslt.version" value="/*/@version"/>
   
   <!-- FIXME : it's not possible to have a default xpath value for xslq parameters
