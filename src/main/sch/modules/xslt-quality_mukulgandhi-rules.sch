@@ -172,7 +172,10 @@
       <xd:desc xml:lang="fr">A moins que la XSLT soit une librairie de fonctions (ce qui n'a pas l'air d'être le cas ici), déclarer un template nommé sans l'utiliser est inutile</xd:desc>
     </xd:doc>
     <report id="xslqual-UnusedNamedTemplate" role="warning"
-      test="not($xslt-quality_xslt-is-a-library) and (@name and not(@match)) and not($xslq:self.resolved//xsl:call-template/@name = @name)">
+      test="not($xslt-quality_xslt-is-a-library) 
+      and (@name and not(@match)) 
+      and (if(@name) then ( not(xslq:expand-prefix(@name, .) = 'Q{http://www.w3.org/1999/XSL/Transform}initial-template') ) else(true()))
+      and not($xslq:self.resolved//xsl:call-template/@name = @name)">
       Named template "<value-of select="@name"/>" is unused in the stylesheet
     </report>
     

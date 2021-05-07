@@ -3,6 +3,7 @@
 <?xml-model href="../main/sch/xslt-quality.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <xsl:stylesheet version="3.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xslt="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
@@ -36,8 +37,12 @@
   <xsl:variable name="local:var5" select="'var5'" as="xs:string" xmlns:local="local2"/>
   <xsl:variable name="local:var6" select="'var6'" as="xs:string"/>
   
+  <xsl:template name="xslt:initial-template">
+    <xsl:message>This is the default initial template</xsl:message>
+  </xsl:template>
+  
   <xd:doc>
-    <xd:desc>Template using defined variables. on may write her "{$local:var3}" whitout incidence</xd:desc>
+    <xd:desc>Template using defined variables. one may write here "{$local:var3}" whitout incidence</xd:desc>
   </xd:doc>
   <xsl:template match="/">
     <xsl:variable name="test" select="$test + 1" as="xs:integer"/>
