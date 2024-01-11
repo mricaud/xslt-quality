@@ -85,7 +85,7 @@
   <xsl:mode name="xslq:generate-default-conf" on-no-match="shallow-skip"/>
   
   <xsl:template match="/sch:schema" mode="xslq:generate-default-conf" priority="1">
-    <conf>
+    <conf ignore-level="">
       <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-default-conf-parameters"/>
       <xsl:apply-templates mode="#current"/>
     </conf>
@@ -94,6 +94,9 @@
   <xsl:template match="(sch:pattern | sch:rule | sch:assert | sch:report)[@id]" mode="xslq:generate-default-conf">
     <xsl:element name="{local-name()}">
       <xsl:attribute name="idref" select="@id"/>
+      <xsl:if test="self::sch:assert or self::sch:report">
+        <xsl:attribute name="level" select="(@role, 'error')[1]"/>
+      </xsl:if>
       <xsl:attribute name="active">
         <xsl:choose>
           <xsl:when test="@id = 'xslt-quality_debug'">

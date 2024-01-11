@@ -4,7 +4,7 @@
 <conf xmlns="https://github.com/mricaud/xsl-quality">
   <aliasdef id="check-namespace">
     <assert idref="xslt-quality_ns-global-statements-need-prefix"/>
-    <assert idref="xslqual-RedundantNamespaceDeclarations"/>
+    <report idref="xslqual-RedundantNamespaceDeclarations"/>
   </aliasdef>
   <aliasdef id="unimportant-rules">
     <report idref="xslqual-UsingNameOrLocalNameFunction"/>

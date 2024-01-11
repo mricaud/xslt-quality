@@ -91,13 +91,25 @@
       datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
       ns="https://github.com/mricaud/xsl-quality"
       >
+      
       <define name="param.attr.name">
-        <attribute name="name">
-          <choice>
-            <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-conf-rng-values-parameters"/>
-          </choice>
-        </attribute>
+        <xsl:variable name="param.attr.name" as="element()*">
+          <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-conf-rng-values-parameters"/>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="count($param.attr.name) != 0">
+            <attribute name="name">
+              <choice>
+                <xsl:sequence select="$param.attr.name"/>
+              </choice>
+            </attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <empty/>
+          </xsl:otherwise>
+        </xsl:choose>
       </define>
+      
       <define name="sch-item.attr.idref">
         <attribute name="idref">
           <choice>

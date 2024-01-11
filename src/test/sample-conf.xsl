@@ -47,6 +47,17 @@
   </xsl:template>
   
   <xsl:function name="local:largeSizeFunction" as="item()*">
+    <conf xmlns="https://github.com/mricaud/xsl-quality" use-when="false()">
+      <include href="conf/my-xslq-conf.xml"/>
+      <param name="xslqual-FunctionComplexity-maxSize">10</param>
+      <param name="xslqual-TemplateComplexity-maxSize">10</param>
+      <param name="xslqual-TooManySmallTemplates-maxSmallTemplates">2</param>
+      <pattern idref="xslt-quality_documentation" active="false"/>
+      <pattern idref="xslt-quality_debug" active="true"/>
+      <report idref="xslqual-UnusedFunction" active="false"/>
+      <alias idref="check-namespace" active="true"/>
+      <alias idref="unimportant-rules" active="false"/>
+    </conf>
     <xsl:param name="s"/>
     <xsl:param name="e" as="element()*"/>
     <xsl:variable name="unused" as="xs:string" xslq:ignore="xslqual-UnusedVariable xslt-quality_use-select-attribute-when-possible">unused</xsl:variable>

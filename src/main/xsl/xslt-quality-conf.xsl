@@ -14,7 +14,7 @@
   </xd:doc>
   
   <conf xmlns="https://github.com/mricaud/xsl-quality">
-    <pattern idref="xslt-quality_documentation" active="false"/>
+    <param name="xslt-quality_xslt-is-a-library">1</param>
     <item idref="xslqual-DontUseDoubleSlashOperator" active="false"/>
     <item idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
   </conf>
@@ -23,8 +23,12 @@
   <!--Parameters/Variables-->
   <!--================================================-->
   
+  <!--This param has been added into the compiled schematron-->
+  <xsl:param name="current-sch.filename" required="true" as="xs:string"/>
+  
   <!--The default conf must be full so local conf can override it properly-->
-  <xsl:param name="xslq:conf-default.uri" as="xs:anyURI" select="resolve-uri('../conf/xslt-quality.default-conf.xml', static-base-uri())"/>
+  <xsl:param name="xslq:conf-default.uri" as="xs:anyURI" 
+    select="resolve-uri(concat($current-sch.filename, '.conf.xml'), static-base-uri())"/>
   
   <xsl:variable name="xslq:conf-default" as="document-node()" select="doc($xslq:conf-default.uri)"/>
   <xsl:variable name="xslq:conf-default-resolved" as="document-node()" select="xslq:resolve-conf($xslq:conf-default)"/>
@@ -32,7 +36,7 @@
     <xsl:document>
       <xslq:conf>
         <xsl:attribute name="xml:base" select="base-uri()"/>
-        <xsl:sequence select="/xsl:*/xslq:conf[1]/node()"/>
+        <xsl:sequence select="/*/xslq:conf[1]/node()"/>
       </xslq:conf>
     </xsl:document>
   </xsl:variable>
@@ -97,11 +101,17 @@
     <xsl:variable name="element" select="($node/ancestor-or-self::*[1], $node/*[1])[1]" as="element()"/>
     <xsl:variable name="conf-element" as="element()?" select="xslq:get-conf-element($sch-idref)"/>
     <xsl:choose>
-      <xsl:when test="$element/@xslq:ignore => tokenize('\s+') = $sch-idref">
+      <xsl:when test="tokenize($element/@xslq:ignore, '\s+') = $sch-idref">
         <xsl:sequence select="false()"/>
       </xsl:when>
       <xsl:when test="empty($conf-element)">
         <xsl:sequence select="true()"/>
+      </xsl:when>
+      <xsl:when test="if ($conf-element/@level != '' and $xslq:conf-merged/xslq:conf/@ignore-level != '') then(
+        tokenize($xslq:conf-merged/xslq:conf/@ignore-level, '\s+') = $conf-element/@level)
+        else(false())
+        ">
+        <xsl:sequence select="false()"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:sequence select="every $e in $conf-element/ancestor-or-self::xslq:* satisfies ($e/@active, 'true')[1] = 'true'"
@@ -259,5 +269,29 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
+  
+  <!--This function is used to add informations to the schematron messages, 
+    those extra information might be parsed to be correctly displayed in the report
+  -->
+  <xsl:function name="xslq:add-info" as="xs:string*">
+    <xsl:param name="node" as="node()"/>
+    <xsl:variable name="context" as="xs:string">
+      <xsl:choose>
+        <xsl:when test="$node/self::attribute()">
+          <xsl:value-of select="concat($node/parent::*/name(), '/@', $node/name())"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$node/ancestor-or-self::*[1]/name()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <!--Result-->
+    <!--As schematron message only allows text, not rich-text, the format (to be parsed) is :
+        ... || Key1: value1 || Key2: value2
+      For any extra-informations to be added. 
+      Of course this function is to be overrided to have specific informations added
+    -->
+    <xsl:value-of select="concat('|| Context: ', $context)"/>
+  </xsl:function>
+  
 </xsl:stylesheet>

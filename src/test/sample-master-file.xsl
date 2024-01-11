@@ -19,7 +19,7 @@
   
   <xsl:import href="sample-submaster-file.xsl"/>
   
-  <xsl:param name="local:master-param" select="'test'" as="xs:string"/>
+  <xsl:param name="local:master-param" as="xs:string"/>
   
   <xsl:variable name="local:master-var" select="'test'" as="xs:string"/>
   

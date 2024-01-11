@@ -14,12 +14,13 @@
   <!--=============================================================-->
   <!--xslt-quality conf-->
   <!--=============================================================-->
-  
+ 
   <conf xmlns="https://github.com/mricaud/xsl-quality">
     <param name="xslt-quality_xslt-is-a-library">1</param>
     <item idref="xslqual-UsingNameOrLocalNameFunction" active="false"/>
     <item idref="xslqual-IncorrectUseOfBooleanConstants" active="false"/>
   </conf>
+  
   
   <!--=============================================================-->
   <!--Import-->
@@ -277,8 +278,16 @@
     <xsl:apply-templates select="node() | @*" mode="#current"/>
   </xsl:template>
   
-  <xsl:template match="xsl:*/@select | xsl:*/@as | xsl:*/@name | xsl:*/@mode" mode="xslq:get-namespace-prefixes">
+  <xsl:template match="xsl:*/@as | xsl:*/@name | xsl:*/@mode" mode="xslq:get-namespace-prefixes">
     <xsl:analyze-string select="." regex="^({$xslq:NCNAME.reg}):">
+      <xsl:matching-substring>
+        <xsl:value-of select="regex-group(1)"/>
+      </xsl:matching-substring>
+    </xsl:analyze-string>
+  </xsl:template>
+  
+  <xsl:template match="xsl:*/@select" mode="xslq:get-namespace-prefixes">
+    <xsl:analyze-string select="." regex="\s({$xslq:NCNAME.reg}):">
       <xsl:matching-substring>
         <xsl:value-of select="regex-group(1)"/>
       </xsl:matching-substring>
