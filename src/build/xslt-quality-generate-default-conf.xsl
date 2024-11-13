@@ -85,7 +85,7 @@
   <xsl:mode name="xslq:generate-default-conf" on-no-match="shallow-skip"/>
   
   <xsl:template match="/sch:schema" mode="xslq:generate-default-conf" priority="1">
-    <conf ignore-level="">
+    <conf ignore-level="" focus="">
       <xsl:apply-templates select="descendant::sch:*/@* | descendant::xsl:*/@*" mode="xslq:generate-default-conf-parameters"/>
       <xsl:apply-templates mode="#current"/>
     </conf>

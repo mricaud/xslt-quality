@@ -100,24 +100,34 @@
     <!--a node that has no ancestor-or-self is the root node-->
     <xsl:variable name="element" select="($node/ancestor-or-self::*[1], $node/*[1])[1]" as="element()"/>
     <xsl:variable name="conf-element" as="element()?" select="xslq:get-conf-element($sch-idref)"/>
-    <xsl:choose>
-      <xsl:when test="tokenize($element/@xslq:ignore, '\s+') = $sch-idref">
+    <xsl:variable name="trueFalseList" as="xs:boolean*">
+      <!--The rule has been explicitely ignored on the XML element-->
+      <xsl:if test="tokenize($element/@xslq:ignore, '\s+') = $sch-idref">
         <xsl:sequence select="false()"/>
-      </xsl:when>
-      <xsl:when test="empty($conf-element)">
+      </xsl:if>
+      <!--There is no conf element for that rule (probably because the schematron rule has no id)-->
+      <xsl:if test="empty($conf-element)">
         <xsl:sequence select="true()"/>
-      </xsl:when>
-      <xsl:when test="if ($conf-element/@level != '' and $xslq:conf-merged/xslq:conf/@ignore-level != '') then(
+      </xsl:if>
+      <!--the conf root element specifies to ignore some level-->
+      <xsl:if test="if ($conf-element/@level != '' and $xslq:conf-merged/xslq:conf/@ignore-level != '') then(
         tokenize($xslq:conf-merged/xslq:conf/@ignore-level, '\s+') = $conf-element/@level)
-        else(false())
-        ">
+        else(false())">
         <xsl:sequence select="false()"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:sequence select="every $e in $conf-element/ancestor-or-self::xslq:* satisfies ($e/@active, 'true')[1] = 'true'"
-          xslq:ignore="xslqual-IncorrectUseOfBooleanConstants"/>
-      </xsl:otherwise>
-    </xsl:choose>
+      </xsl:if>
+      <!--the conf root element specifies to focus on one or more specific rule : 
+         → ignore others except ancestor of the specified rules-->
+      <xsl:if test="if ($xslq:conf-merged/xslq:conf/@focus != '') then(
+        not(tokenize($xslq:conf-merged/xslq:conf/@focus, '\s+') = $conf-element/@idref))
+        else(false())">
+        <xsl:sequence select="false()"/>
+      </xsl:if>
+    </xsl:variable>
+    <!--If one of the boolean in $trueFalseList is false, then dont activate the rule, 
+      else activate the rule if it's activated within the conf (also check the whole ancestors hierarchy in conf is activated)-->
+    <xsl:sequence select="if($trueFalseList = false()) then(false()) else(
+      every $e in $conf-element/ancestor-or-self::xslq:* satisfies ($e/@active, 'true')[1] = 'true'
+      )" xslq:ignore="xslqual-IncorrectUseOfBooleanConstants"/>
   </xsl:function>
   
   <xd:doc>2 arity version of xslq:get-param-value</xd:doc>
@@ -269,8 +279,8 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <!--This function is used to add informations to the schematron messages, 
+
+<!--This function is used to add informations to the schematron messages, 
     those extra information might be parsed to be correctly displayed in the report
   -->
   <xsl:function name="xslq:add-info" as="xs:string*">
